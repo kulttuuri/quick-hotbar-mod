@@ -1,0 +1,16 @@
+# Folders
+.gradle/*
+.metadata/*
+build/*
+bin/*
+
+# GradleForge files
+setup.sh
+gradlew.bat
+gradlew
+deploy.sh
+
+# Eclipse
+eclipse/*
+.classpath
+.project
