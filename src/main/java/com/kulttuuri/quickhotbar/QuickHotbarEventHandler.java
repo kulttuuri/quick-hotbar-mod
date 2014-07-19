@@ -83,7 +83,7 @@ public class QuickHotbarEventHandler implements ITickHandler
         InventoryPlayer inv = mc.thePlayer.inventory;
         GL11.glPushMatrix();
         	//GL11.glTranslatef(1f, 1f, 50f);
-        	gui.drawTexturedModalRect(width / 2 - 92, height - yPosFromBottom, 0, 0, 182, 22);
+        	gui.drawTexturedModalRect(width / 2 - 91, height - yPosFromBottom, 0, 0, 182, 22);
         	//gui.drawTexturedModalRect(width / 2 - 91 - 1 + inv.currentItem * 20, height - yPosFromBottom - 1, 0, 22, 24, 22); Renders the selected slot, we don't want that.
         GL11.glPopMatrix();
 
@@ -93,7 +93,7 @@ public class QuickHotbarEventHandler implements ITickHandler
         
         for (int i = 0; i < 9; ++i)
         {
-            int x = width / 2 - 90 + i * 20 + 1;
+            int x = width / 2 - 90 + i * 20 + 2;
             int z = height - yPosFromBottom - 1;
             int renderSlot = itemRowNumber * 9 + i;
             renderInventorySlot(renderSlot, x, z + 3, partialTicks);
