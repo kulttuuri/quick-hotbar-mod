@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import com.kulttuuri.quickhotbar.packets.PacketChangeCurrentRow;
+import com.kulttuuri.quickhotbar.settings.SettingsClient;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
@@ -17,6 +18,7 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.MouseEvent;
@@ -25,23 +27,38 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 
-/**
- * Main class for Quick Hotbar mod.
- * @author Kulttuuri
- */
 public class QuickHotbarEventHandler
 {
-	// TODO: Make clientside only!
-	// TODO: Transparency for items
-	// TODO: Make to work in inventories
-	
-	private static boolean switchedInventory = false;
-	
 	private static final ResourceLocation WIDGETS = new ResourceLocation("textures/gui/widgets.png");
 	private static final RenderItem itemRenderer = new RenderItem();
 	
-	private static final int KEY_SCROLLING = Keyboard.KEY_LCONTROL;
+	private static boolean announceWelcomeMessage = false;
+	private static boolean renderQuickHotbarPreview = false;
+	private static boolean isUpKeyDown = false;
+	private static boolean isDownKeyDown = false;
+	
+	@SubscribeEvent
+	public void clientJoinedEvent(ClientConnectedToServerEvent event)
+	{
+		announceWelcomeMessage = true;
+	}
+	
+	private void announceModWelcomeMessage()
+	{
+		SettingsClient settings = QuickHotbarMod.clientSettings;
+		if (settings.ANNOUNCE_MOD_LOADED)
+		{
+			String keyNameScrolling = Keyboard.getKeyName(settings.SCROLLING_KEY).equals("LCONTROL") ? "left ctrl" : Keyboard.getKeyName(settings.SCROLLING_KEY).toLowerCase();
+			String keyNameUp = Keyboard.getKeyName(settings.SCROLLING_KEY_UP);
+			String keyNameDown = Keyboard.getKeyName(settings.SCROLLING_KEY_DOWN);
+			String orText = settings.ALLOW_SCROLLING_WITH_KEYBOARD == true ? " (or keys " + keyNameUp.toLowerCase() + " & " + keyNameDown.toLowerCase() + ")" : "";
+			String msg = "Quick Hotbar " + QuickHotbarModInfo.VERSION + " loaded. ";
+			msg = msg + "Hold down " + keyNameScrolling + " and use mouse wheel" + orText + " to scroll between inventory rows.";
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation(msg, new Object[0]));
+		}
+	}
 	
 	/**
 	 * To render chat messages above the inventory slots preview.
@@ -50,16 +67,55 @@ public class QuickHotbarEventHandler
     @SubscribeEvent
     public void renderChatMessagesAboveInventorySlotsPreview(RenderGameOverlayEvent.Chat event)
     {
-        if (Keyboard.isKeyDown(KEY_SCROLLING) && switchedInventory)
+        if (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && renderQuickHotbarPreview)
         {
             event.posY -= 60;
         }
     }
 	
     @SubscribeEvent
+	public void handleKeyboardPresses(RenderGameOverlayEvent.Pre event)
+	{
+		if (QuickHotbarMod.clientSettings.IMMEDIATELY_SHOW_POPUP_MENU && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY)) renderQuickHotbarPreview = true;
+		
+		if (QuickHotbarMod.clientSettings.ALLOW_SCROLLING_WITH_KEYBOARD)
+		{
+			if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP)) isUpKeyDown = false;
+			if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_DOWN)) isDownKeyDown = false;
+			
+			if (!isUpKeyDown && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP))
+			{
+				isUpKeyDown = true;
+				try
+				{
+					//Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(1);
+					switchItemRows(true);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			else if (!isDownKeyDown && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_DOWN))
+			{
+				isDownKeyDown = true;
+				try
+				{
+					//Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(-1);
+					switchItemRows(false);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+    
+    @SubscribeEvent
     public void hideInGameGuiElementsWhenPreviewIsOpen(RenderGameOverlayEvent.Pre event)
     {
-    	if (switchedInventory && Keyboard.isKeyDown(KEY_SCROLLING))
+    	if (renderQuickHotbarPreview && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY))
     	{
 	    	if (event.type == event.type.FOOD || event.type == event.type.HEALTH || event.type == event.type.EXPERIENCE)
 	    	{
@@ -71,8 +127,13 @@ public class QuickHotbarEventHandler
 	@SubscribeEvent
 	public void handleGameUpdate(TickEvent.RenderTickEvent event)
 	{
-		//System.out.println("TICKEVENT!");
-		if (switchedInventory && Keyboard.isKeyDown(KEY_SCROLLING))
+		if (announceWelcomeMessage && Minecraft.getMinecraft() != null && Minecraft.getMinecraft().thePlayer != null)
+		{
+			announceWelcomeMessage = false;
+			announceModWelcomeMessage();
+		}
+		
+		if (renderQuickHotbarPreview && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY))
 		{
 			if (Minecraft.getMinecraft().ingameGUI == null || !Minecraft.getMinecraft().inGameHasFocus) return;
 			
@@ -86,9 +147,9 @@ public class QuickHotbarEventHandler
 			renderHotbar(mc.ingameGUI, 2, 63, width, height, event.renderTickTime);
 			renderHotbar(mc.ingameGUI, 1, 83, width, height, event.renderTickTime);
 		}
-		else if (!Keyboard.isKeyDown(KEY_SCROLLING) && switchedInventory)
+		else if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && renderQuickHotbarPreview)
 		{
-			switchedInventory = false;
+			renderQuickHotbarPreview = false;
 			// Enable back rendering of item name user changed slot into
 			Minecraft.getMinecraft().gameSettings.heldItemTooltips = true;
 		}
@@ -175,7 +236,7 @@ public class QuickHotbarEventHandler
 	public void handleMouseScroll(MouseEvent event)
 	{
 	    int dWheel = event.dwheel;
-	    if (Keyboard.isKeyDown(KEY_SCROLLING))
+	    if (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY))
 	    {
 		    if (dWheel < 0)
 		    {
@@ -207,7 +268,7 @@ public class QuickHotbarEventHandler
 	
 	private void switchItemRows(boolean directionUp) throws Exception
 	{
-		switchedInventory = true;
+		renderQuickHotbarPreview = true;
 		QuickHotbarMod.instance.proxy.simpleNetworkWrapper.sendToServer(new PacketChangeCurrentRow(directionUp));
 	}
 }
