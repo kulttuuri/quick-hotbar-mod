@@ -32,10 +32,53 @@ import cpw.mods.fml.common.TickType;
 
 public class QuickHotbarEventHandler implements ITickHandler
 {
-	private static boolean switchedInventory = false;
-	
 	private static final ResourceLocation WIDGETS = new ResourceLocation("textures/gui/widgets.png");
 	private static final RenderItem itemRenderer = new RenderItem();
+	
+	private static boolean isUpKeyDown = false;
+	private static boolean isDownKeyDown = false;
+	
+	/** Should we render other item slots in the ingame gui. */
+	private static boolean renderQuickHotbarPreview = false;
+
+	@ForgeSubscribe
+	public void handleKeyboardPresses(RenderGameOverlayEvent.Pre event)
+	{
+		if (QuickHotbarMod.clientSettings.IMMEDIATELY_SHOW_POPUP_MENU && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY)) renderQuickHotbarPreview = true;
+		
+		if (QuickHotbarMod.clientSettings.ALLOW_SCROLLING_WITH_KEYBOARD)
+		{
+			if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP)) isUpKeyDown = false;
+			if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_DOWN)) isDownKeyDown = false;
+			
+			if (!isUpKeyDown && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP))
+			{
+				isUpKeyDown = true;
+				try
+				{
+					//Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(1);
+					switchItemRows(true);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			else if (!isDownKeyDown && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_DOWN))
+			{
+				isDownKeyDown = true;
+				try
+				{
+					//Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(-1);
+					switchItemRows(false);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 	
 	/**
 	 * To render chat messages above the inventory slots preview.
@@ -44,7 +87,7 @@ public class QuickHotbarEventHandler implements ITickHandler
 	@ForgeSubscribe
     public void renderChatMessagesAboveInventorySlotsPreview(RenderGameOverlayEvent.Chat event)
     {
-        if (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && switchedInventory)
+        if (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && renderQuickHotbarPreview)
         {
             event.posY -= 60;
         }
@@ -53,7 +96,7 @@ public class QuickHotbarEventHandler implements ITickHandler
 	@ForgeSubscribe
     public void hideInGameGuiElementsWhenPreviewIsOpen(RenderGameOverlayEvent.Pre event)
     {
-    	if (switchedInventory && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY))
+    	if (renderQuickHotbarPreview && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY))
     	{
 	    	if (event.type == event.type.FOOD || event.type == event.type.HEALTH || event.type == event.type.EXPERIENCE)
 	    	{
@@ -175,7 +218,7 @@ public class QuickHotbarEventHandler implements ITickHandler
 	
 	private void switchItemRows(boolean directionUp) throws Exception
 	{
-		switchedInventory = true;
+		renderQuickHotbarPreview = true;
 		//InventoryScrollMod.instance.proxy.simpleNetworkWrapper.sendToServer(new PacketChangeCurrentRow(directionUp));
 		ByteArrayOutputStream bos = new ByteArrayOutputStream(8);
 		DataOutputStream outputStream = new DataOutputStream(bos);
@@ -204,8 +247,7 @@ public class QuickHotbarEventHandler implements ITickHandler
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData)
 	{
-		//System.out.println("TICKEVENT!");
-		if (switchedInventory && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY))
+		if ((renderQuickHotbarPreview) && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY))
 		{
 			if (Minecraft.getMinecraft().ingameGUI == null || !Minecraft.getMinecraft().inGameHasFocus) return;
 			
@@ -219,9 +261,9 @@ public class QuickHotbarEventHandler implements ITickHandler
 			renderHotbar(mc.ingameGUI, 2, 63, width, height, 1);
 			renderHotbar(mc.ingameGUI, 1, 83, width, height, 1);
 		}
-		else if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && switchedInventory)
+		else if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && renderQuickHotbarPreview)
 		{
-			switchedInventory = false;
+			renderQuickHotbarPreview = false;
 			// Enable back rendering of item name user changed slot into
 			Minecraft.getMinecraft().gameSettings.heldItemTooltips = true;
 		}

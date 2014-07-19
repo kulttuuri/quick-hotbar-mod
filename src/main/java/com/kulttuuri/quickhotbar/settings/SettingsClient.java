@@ -21,12 +21,16 @@ public class SettingsClient extends SettingsGlobal
 	/** Key used for scrolling inventory rows down with keyboard. */
 	public int SCROLLING_KEY_DOWN = Keyboard.KEY_DOWN;
 	
+	/** Should we announce when player joins into server that this mod has been loaded? */
+	public boolean ANNOUNCE_MOD_LOADED = true;
+	
 	@Override
 	public void loadSettingsFromFile(File configurationFile)
 	{
 		Configuration config = new Configuration(configurationFile);
 		config.load();
 		
+		Property announceModLoaded = config.get("general", "announce_mod_loaded", true);
 		Property KeyBindingsScroll = config.get("keybindings", "scrolling_key", "KEY_LCONTROL");
 		Property immediately_show_popup_menu = config.get("general", "immediately_show_popup_menu", false);
 		Property allowKeyboardScroll = config.get("general", "allow_scrolling_with_keyboard_keys", true);
@@ -34,13 +38,15 @@ public class SettingsClient extends SettingsGlobal
 		Property scrollKeyDown = config.get("keybindings", "keyboard_scroll_key_down", "KEY_DOWN");
 		
 		// Load settings
-		SCROLLING_KEY = loadKeybindingFromFile(KeyBindingsScroll.getString(), Keyboard.KEY_LCONTROL);
+		ANNOUNCE_MOD_LOADED = announceModLoaded.getBoolean(true);
+		SCROLLING_KEY = loadKeybindingFromFile(KeyBindingsScroll.getString().trim(), Keyboard.KEY_LCONTROL);
 		IMMEDIATELY_SHOW_POPUP_MENU = immediately_show_popup_menu.getBoolean(false);
 		ALLOW_SCROLLING_WITH_KEYBOARD = allowKeyboardScroll.getBoolean(true);
-		SCROLLING_KEY_UP = loadKeybindingFromFile(scrollKeyUp.getString(), Keyboard.KEY_UP);
-		SCROLLING_KEY_DOWN = loadKeybindingFromFile(scrollKeyDown.getString(), Keyboard.KEY_DOWN);
+		SCROLLING_KEY_UP = loadKeybindingFromFile(scrollKeyUp.getString().trim(), Keyboard.KEY_UP);
+		SCROLLING_KEY_DOWN = loadKeybindingFromFile(scrollKeyDown.getString().trim(), Keyboard.KEY_DOWN);
 		
-		// Save comments for keybindings
+		// Save comments for settings
+		announceModLoaded.comment = "When you join a game, this mod prints out that is has been loaded and it's keybindings. Set to false to disable this behavior. Default: true";
 		KeyBindingsScroll.comment = "Key which you need to hold down to scroll between inventory slots. Default: KEY_LCONTROL. Should you wish to change this key, you can find all supported keys from here: http://www.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html";
 		immediately_show_popup_menu.comment = "If this is true, popup menu will be shown immediately instead of waiting till user scrolls. Default: false";
 		allowKeyboardScroll.comment = "If this is true, user can scroll inventory rows with bind keyboard keys. Default: true";
