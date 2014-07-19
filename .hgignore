@@ -10,6 +10,14 @@ gradlew.bat
 gradlew
 deploy.sh
 
+# Forge / fml files
+README.txt
+MinecraftForge-License.txt
+MinecraftForge-Credits.txt
+LICENSE-fml.txt
+forge-1.7.10-10.13.0.1159-changelog.txt
+CREDITS-fml.txt
+
 # Eclipse
 eclipse/*
 .classpath
