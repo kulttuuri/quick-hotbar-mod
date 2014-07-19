@@ -2,10 +2,12 @@ package com.kulttuuri.quickhotbar.proxy;
 
 import org.lwjgl.input.Keyboard;
 
+import com.kulttuuri.quickhotbar.NetworkConnectionHandler;
 import com.kulttuuri.quickhotbar.QuickHotbarEventHandler;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
@@ -23,5 +25,7 @@ public class clientProxy extends CommonProxy
 		//FMLCommonHandler.instance().re
 		TickRegistry.registerTickHandler(new QuickHotbarEventHandler(), Side.CLIENT);
 		MinecraftForge.EVENT_BUS.register(new QuickHotbarEventHandler());
+		
+		NetworkRegistry.instance().registerConnectionHandler(new NetworkConnectionHandler());
 	}
 }
