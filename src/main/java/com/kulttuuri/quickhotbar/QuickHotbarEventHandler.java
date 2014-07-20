@@ -6,10 +6,12 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import com.kulttuuri.quickhotbar.extended.InventoryPlayerCustomHotbar;
 import com.kulttuuri.quickhotbar.packets.PacketChangeCurrentRow;
 import com.kulttuuri.quickhotbar.settings.SettingsClient;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -115,6 +117,11 @@ public class QuickHotbarEventHandler
     @SubscribeEvent
     public void hideInGameGuiElementsWhenPreviewIsOpen(RenderGameOverlayEvent.Pre event)
     {
+    	if (event.type == event.type.HOTBAR)
+    	{
+    		event.setCanceled(true);
+    	}
+    	
     	if (renderQuickHotbarPreview && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY))
     	{
 	    	if (event.type == event.type.FOOD || event.type == event.type.HEALTH || event.type == event.type.EXPERIENCE)
@@ -130,30 +137,87 @@ public class QuickHotbarEventHandler
 		if (announceWelcomeMessage && Minecraft.getMinecraft() != null && Minecraft.getMinecraft().thePlayer != null)
 		{
 			announceWelcomeMessage = false;
+			System.out.println("REPLACING PLAYER INVENTORY!");
+			
+			EntityClientPlayerMP currentPlayer = Minecraft.getMinecraft().thePlayer;
+			
+			ItemStack[] oldInventoryPlayerItems = currentPlayer.inventory.mainInventory;
+			ItemStack[] oldInventoryPlayerArmors = currentPlayer.inventory.armorInventory;
+			int oldInventoryCurrentItem = currentPlayer.inventory.currentItem;
+			
+			currentPlayer.inventory = new InventoryPlayerCustomHotbar(Minecraft.getMinecraft().thePlayer);
+			currentPlayer.inventory.mainInventory = oldInventoryPlayerItems;
+			currentPlayer.inventory.armorInventory = oldInventoryPlayerArmors;
+			currentPlayer.inventory.currentItem = oldInventoryCurrentItem;
+			
 			announceModWelcomeMessage();
 		}
 		
-		if (renderQuickHotbarPreview && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY))
+		if (Minecraft.getMinecraft() != null && Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().theWorld != null && Minecraft.getMinecraft().currentScreen == null)
 		{
-			if (Minecraft.getMinecraft().ingameGUI == null || !Minecraft.getMinecraft().inGameHasFocus) return;
-			
 			Minecraft mc = Minecraft.getMinecraft();
-			mc.gameSettings.heldItemTooltips = false; // Disable the selected item name rendering in the screen while showing preview of itemslots
-			
 			ScaledResolution res = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
 	        int width = res.getScaledWidth();
 	        int height = res.getScaledHeight();
-			renderHotbar(mc.ingameGUI, 3, 43, width, height, event.renderTickTime);
-			renderHotbar(mc.ingameGUI, 2, 63, width, height, event.renderTickTime);
-			renderHotbar(mc.ingameGUI, 1, 83, width, height, event.renderTickTime);
-		}
-		else if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && renderQuickHotbarPreview)
-		{
-			renderQuickHotbarPreview = false;
-			// Enable back rendering of item name user changed slot into
-			Minecraft.getMinecraft().gameSettings.heldItemTooltips = true;
+	        
+			// We render current hotbar row ourself manually
+	        int invRowToRender = ((InventoryPlayerCustomHotbar)mc.thePlayer.inventory).getInventoryRowToRenderInHotbar();
+	        //System.out.println("Row to render: " + invRowToRender);
+			renderHotbarNormal(mc.ingameGUI, invRowToRender == 4 ? 0 : invRowToRender, 23, width, height, event.renderTickTime);
+			
+			if (renderQuickHotbarPreview && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY))
+			{
+				if (Minecraft.getMinecraft().ingameGUI == null || !Minecraft.getMinecraft().inGameHasFocus) return;
+				
+				mc.gameSettings.heldItemTooltips = false; // Disable the selected item name rendering in the screen while showing preview of itemslots
+				
+				renderHotbar(mc.ingameGUI, 1, 113, width, height, event.renderTickTime);
+				renderHotbar(mc.ingameGUI, 2, 93, width, height, event.renderTickTime);
+				renderHotbar(mc.ingameGUI, 3, 73, width, height, event.renderTickTime);
+				renderHotbar(mc.ingameGUI, 0, 53, width, height, event.renderTickTime);
+			}
+			else if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && renderQuickHotbarPreview)
+			{
+				renderQuickHotbarPreview = false;
+				// Enable back rendering of item name user changed slot into
+				Minecraft.getMinecraft().gameSettings.heldItemTooltips = true;
+			}
 		}
 	}
+	
+    private void renderHotbarNormal(GuiIngame gui, int itemRowNumber, int yPosFromBottom, int width, int height, float partialTicks)
+    {
+    	Minecraft mc = Minecraft.getMinecraft();
+        mc.mcProfiler.startSection("actionBar");
+
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        mc.renderEngine.bindTexture(WIDGETS);
+        
+        InventoryPlayer inv = mc.thePlayer.inventory;
+        GL11.glPushMatrix();
+        	GL11.glTranslatef(1f, 1f, 100f);
+        	gui.drawTexturedModalRect(width / 2 - 92, height - yPosFromBottom, 0, 0, 182, 22);
+        	gui.drawTexturedModalRect(width / 2 - 91 - 1 + inv.currentItem * 20, height - yPosFromBottom - 1, 0, 22, 24, 22);
+        GL11.glPopMatrix();
+
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+        RenderHelper.enableGUIStandardItemLighting();
+        
+        for (int i = 0; i < 9; ++i)
+        {
+            int x = width / 2 - 90 + i * 20 + 2;
+            int z = height - yPosFromBottom;
+            int renderSlot = itemRowNumber * 9 + i;
+            renderInventorySlot(renderSlot, x, z + 3, partialTicks);
+        }
+
+        RenderHelper.disableStandardItemLighting();
+        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+        mc.mcProfiler.endSection();
+    }
 	
     /**
      * Renders the hotbar. Code copied from GuiIngameForge.
@@ -170,14 +234,19 @@ public class QuickHotbarEventHandler
 
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5F);
+        int invRowToRender = ((InventoryPlayerCustomHotbar)mc.thePlayer.inventory).getInventoryRowToRenderInHotbar();
+        if (invRowToRender == 4) invRowToRender = 0;
+        if (invRowToRender == itemRowNumber)
+        	GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        else
+        	GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5F);
         mc.renderEngine.bindTexture(WIDGETS);
         
         InventoryPlayer inv = mc.thePlayer.inventory;
         GL11.glPushMatrix();
         	GL11.glTranslatef(1f, 1f, 100f);
         	gui.drawTexturedModalRect(width / 2 - 92, height - yPosFromBottom, 0, 0, 182, 22);
-        	//gui.drawTexturedModalRect(width / 2 - 91 - 1 + inv.currentItem * 20, height - yPosFromBottom - 1, 0, 22, 24, 22); Renders the selected slot, we don't want that.
+        	//gui.drawTexturedModalRect(width / 2 - 91 - 1 + inv.currentItem * 20, height - yPosFromBottom - 1, 0, 22, 24, 22); // Renders the selected slot, we don't want that.
         GL11.glPopMatrix();
 
         GL11.glDisable(GL11.GL_BLEND);
@@ -269,6 +338,7 @@ public class QuickHotbarEventHandler
 	private void switchItemRows(boolean directionUp) throws Exception
 	{
 		renderQuickHotbarPreview = true;
-		QuickHotbarMod.instance.proxy.simpleNetworkWrapper.sendToServer(new PacketChangeCurrentRow(directionUp));
+		((InventoryPlayerCustomHotbar)Minecraft.getMinecraft().thePlayer.inventory).changeCurrentInventoryRowToRenderInHotbar(!directionUp);
+		//QuickHotbarMod.instance.proxy.simpleNetworkWrapper.sendToServer(new PacketChangeCurrentRow(directionUp));
 	}
 }
