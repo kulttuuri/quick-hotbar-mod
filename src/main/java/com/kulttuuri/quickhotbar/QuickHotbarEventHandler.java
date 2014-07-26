@@ -1,7 +1,5 @@
 package com.kulttuuri.quickhotbar;
 
-import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.HOTBAR;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -11,21 +9,16 @@ import com.kulttuuri.quickhotbar.settings.SettingsClient;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 
@@ -33,12 +26,17 @@ public class QuickHotbarEventHandler
 {
 	private static final ResourceLocation WIDGETS = new ResourceLocation("textures/gui/widgets.png");
 	private static final RenderItem itemRenderer = new RenderItem();
-	
+
+    public static final String ENUM_CURRENT_SWITCH_MODE_ROW = "switch_mode_row";
+    public static final String ENUM_CURRENT_SWITCH_MODE_COLUMN = "switch_mode_column";
+    public static String currentSwitchMode = ENUM_CURRENT_SWITCH_MODE_ROW;
+
 	private static boolean announceWelcomeMessage = false;
 	private static boolean renderQuickHotbarPreview = false;
 	private static boolean isUpKeyDown = false;
 	private static boolean isDownKeyDown = false;
-	
+    private static boolean isModeSwitchKeyDown = false;
+
 	@SubscribeEvent
 	public void clientJoinedEvent(ClientConnectedToServerEvent event)
 	{
@@ -76,13 +74,28 @@ public class QuickHotbarEventHandler
     @SubscribeEvent
 	public void handleKeyboardPresses(RenderGameOverlayEvent.Pre event)
 	{
+        if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_SWITCH_MODE)) isModeSwitchKeyDown = false;
+        if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP)) isUpKeyDown = false;
+        if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_DOWN)) isDownKeyDown = false;
+
+        if (!isModeSwitchKeyDown &&
+            Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_SWITCH_MODE) &&
+            Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) &&
+            QuickHotbarMod.clientSettings.ALLOW_MODE_SWITCHING)
+        {
+            isModeSwitchKeyDown = true;
+            currentSwitchMode = currentSwitchMode.equals(ENUM_CURRENT_SWITCH_MODE_ROW) ? ENUM_CURRENT_SWITCH_MODE_COLUMN : ENUM_CURRENT_SWITCH_MODE_ROW;
+
+            String msg = "";
+            if (currentSwitchMode.equals(ENUM_CURRENT_SWITCH_MODE_ROW)) msg = "Switched to row scrolling.";
+            else msg = "Switched to column scrolling.";
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation(msg, new Object[0]));
+        }
+
 		if (QuickHotbarMod.clientSettings.IMMEDIATELY_SHOW_POPUP_MENU && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY)) renderQuickHotbarPreview = true;
 		
 		if (QuickHotbarMod.clientSettings.ALLOW_SCROLLING_WITH_KEYBOARD)
 		{
-			if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP)) isUpKeyDown = false;
-			if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_DOWN)) isDownKeyDown = false;
-			
 			if (!isUpKeyDown && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP))
 			{
 				isUpKeyDown = true;
@@ -269,6 +282,9 @@ public class QuickHotbarEventHandler
 	private void switchItemRows(boolean directionUp) throws Exception
 	{
 		renderQuickHotbarPreview = true;
-		QuickHotbarMod.instance.proxy.simpleNetworkWrapper.sendToServer(new PacketChangeCurrentRow(directionUp));
+        boolean direction = QuickHotbarMod.clientSettings.REVERSE_MOUSEWHEEL_SCROLLING ? !directionUp : directionUp;
+        boolean changeRow = currentSwitchMode.equals(ENUM_CURRENT_SWITCH_MODE_ROW);
+
+		QuickHotbarMod.instance.proxy.simpleNetworkWrapper.sendToServer(new PacketChangeCurrentRow(direction, changeRow));
 	}
 }
