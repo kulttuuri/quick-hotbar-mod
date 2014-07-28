@@ -39,14 +39,15 @@ public class QuickHotbarMod implements IPacketHandler
     
     @SidedProxy(clientSide = "com.kulttuuri.quickhotbar.proxy.clientProxy", serverSide = "com.kulttuuri.quickhotbar.proxy.serverProxy")
     public static IProxy proxy;
-    
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
     	if (event.getSide() == Side.CLIENT)
     	{
     		clientSettings.loadSettingsFromFile(event.getSuggestedConfigurationFile());
-    	}
+            if (!clientSettings.MODE_SWITCHING_DEFAULT_ROW) QuickHotbarEventHandler.currentSwitchMode = QuickHotbarEventHandler.ENUM_CURRENT_SWITCH_MODE_COLUMN;
+        }
     }
     
     @EventHandler

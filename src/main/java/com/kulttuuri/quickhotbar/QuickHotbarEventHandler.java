@@ -6,6 +6,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.util.EnumSet;
 
+import net.minecraft.block.Block;
+import net.minecraft.network.packet.Packet101CloseWindow;
+import net.minecraft.network.packet.Packet102WindowClick;
+import net.minecraft.network.packet.Packet103SetSlot;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -34,23 +38,45 @@ public class QuickHotbarEventHandler implements ITickHandler
 {
 	private static final ResourceLocation WIDGETS = new ResourceLocation("textures/gui/widgets.png");
 	private static final RenderItem itemRenderer = new RenderItem();
-	
+
+    public static final String ENUM_CURRENT_SWITCH_MODE_ROW = "switch_mode_row";
+    public static final String ENUM_CURRENT_SWITCH_MODE_COLUMN = "switch_mode_column";
+    public static String currentSwitchMode = ENUM_CURRENT_SWITCH_MODE_ROW;
+
 	private static boolean isUpKeyDown = false;
 	private static boolean isDownKeyDown = false;
+    private static boolean isModeSwitchKeyDown = false;
 	
 	/** Should we render other item slots in the ingame gui. */
 	private static boolean renderQuickHotbarPreview = false;
 
+    private static final int ITEMS_IN_ROW = 9;
+
 	@ForgeSubscribe
 	public void handleKeyboardPresses(RenderGameOverlayEvent.Pre event)
 	{
+        if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_SWITCH_MODE)) isModeSwitchKeyDown = false;
+        if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP)) isUpKeyDown = false;
+        if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_DOWN)) isDownKeyDown = false;
+
+        if (!isModeSwitchKeyDown &&
+                Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_SWITCH_MODE) &&
+                Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) &&
+                QuickHotbarMod.clientSettings.ALLOW_MODE_SWITCHING)
+        {
+            isModeSwitchKeyDown = true;
+            currentSwitchMode = currentSwitchMode.equals(ENUM_CURRENT_SWITCH_MODE_ROW) ? ENUM_CURRENT_SWITCH_MODE_COLUMN : ENUM_CURRENT_SWITCH_MODE_ROW;
+
+            String msg = "";
+            if (currentSwitchMode.equals(ENUM_CURRENT_SWITCH_MODE_ROW)) msg = "Switched to row scrolling.";
+            else msg = "Switched to column scrolling.";
+            Minecraft.getMinecraft().thePlayer.addChatMessage(msg);
+        }
+
 		if (QuickHotbarMod.clientSettings.IMMEDIATELY_SHOW_POPUP_MENU && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY)) renderQuickHotbarPreview = true;
 		
 		if (QuickHotbarMod.clientSettings.ALLOW_SCROLLING_WITH_KEYBOARD)
 		{
-			if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP)) isUpKeyDown = false;
-			if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_DOWN)) isDownKeyDown = false;
-			
 			if (!isUpKeyDown && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP))
 			{
 				isUpKeyDown = true;
@@ -218,8 +244,53 @@ public class QuickHotbarEventHandler implements ITickHandler
 	
 	private void switchItemRows(boolean directionUp) throws Exception
 	{
+        directionUp = QuickHotbarMod.clientSettings.REVERSE_MOUSEWHEEL_SCROLLING ? !directionUp : directionUp;
+        boolean changeRow = currentSwitchMode.equals(ENUM_CURRENT_SWITCH_MODE_ROW);
+
 		renderQuickHotbarPreview = true;
+
+        if (directionUp)
+        {
+            if (changeRow)
+            {
+                switchItemRows(3, 2);
+                switchItemRows(2, 1);
+                switchItemRows(1, 0);
+            }
+            else
+            {
+                int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
+                currentSlot = currentSlot - 1;
+                if (currentSlot < 0) currentSlot = 8;
+                switchItemsInSlots(3 * ITEMS_IN_ROW + currentSlot, 2 * ITEMS_IN_ROW + currentSlot);
+                switchItemsInSlots(2 * ITEMS_IN_ROW + currentSlot, 1 * ITEMS_IN_ROW + currentSlot);
+                switchItemsInSlots(1 * ITEMS_IN_ROW + currentSlot, 0 * ITEMS_IN_ROW + currentSlot);
+            }
+        }
+        else
+        {
+            if (changeRow)
+            {
+                switchItemRows(0, 1);
+                switchItemRows(1, 2);
+                switchItemRows(2, 3);
+            }
+            else
+            {
+                int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
+                currentSlot = currentSlot + 1;
+                if (currentSlot >= 9) currentSlot = 0;
+                switchItemsInSlots(0 * ITEMS_IN_ROW + currentSlot, 1 * ITEMS_IN_ROW + currentSlot);
+                switchItemsInSlots(1 * ITEMS_IN_ROW + currentSlot, 2 * ITEMS_IN_ROW + currentSlot);
+                switchItemsInSlots(2 * ITEMS_IN_ROW + currentSlot, 3 * ITEMS_IN_ROW + currentSlot);
+            }
+        }
+
+
+        //switchItemRows(2, 3);
+
 		//InventoryScrollMod.instance.proxy.simpleNetworkWrapper.sendToServer(new PacketChangeCurrentRow(directionUp));
+        /*
 		ByteArrayOutputStream bos = new ByteArrayOutputStream(8);
 		DataOutputStream outputStream = new DataOutputStream(bos);
 		try
@@ -237,7 +308,51 @@ public class QuickHotbarEventHandler implements ITickHandler
 		packet.length = bos.size();
 		
 		Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(packet);
+		*/
 	}
+
+    private ItemStack[] getItemsInRow(int row, InventoryPlayer inventory) throws Exception
+    {
+        ItemStack[] items = new ItemStack[9];
+        for (int i = 0; i < 9; i++)
+        {
+            int stack = i + (row * ITEMS_IN_ROW);
+            //System.out.println("GETTING STACK: " + stack);
+            items[i] = inventory.getStackInSlot(i + (row * ITEMS_IN_ROW));
+            //System.out.println(items[i]);
+        }
+        return items;
+    }
+
+    private void switchItemRows(int row1, int row2)
+    {
+        InventoryPlayer inventory = Minecraft.getMinecraft().thePlayer.inventory;
+
+        for (int i = 0; i < ITEMS_IN_ROW; i++)
+        {
+            switchItemsInSlots(row1 * ITEMS_IN_ROW + i, row2 * ITEMS_IN_ROW + i);
+        }
+    }
+
+    /**
+     * Switches place of two items in player inventory. Calls the playercontroller's windowClick method to
+     * do it on client.
+     * @param slot1 slot 1.
+     * @param slot2 slot 2.
+     */
+    private void switchItemsInSlots(int slot1, int slot2)
+    {
+        int inventoryId = 0; /** The id of the window which was clicked. 0 for player inventory. */
+        int rightClick = 0; /** 1 when right-clicking and otherwise 0 */
+        int holdingShift = 0; /** Is player holding shift key */
+
+        // We add 9 because first row is crafting stuff (yeah, frigging inventorycontainer ordering...)
+        slot1 = slot1 + 9;
+        slot2 = slot2 + 9;
+        Minecraft.getMinecraft().playerController.windowClick(inventoryId, slot1, rightClick, holdingShift, Minecraft.getMinecraft().thePlayer);
+        Minecraft.getMinecraft().playerController.windowClick(inventoryId, slot2, rightClick, holdingShift, Minecraft.getMinecraft().thePlayer);
+        Minecraft.getMinecraft().playerController.windowClick(inventoryId, slot1, rightClick, holdingShift, Minecraft.getMinecraft().thePlayer);
+    }
 
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData)
