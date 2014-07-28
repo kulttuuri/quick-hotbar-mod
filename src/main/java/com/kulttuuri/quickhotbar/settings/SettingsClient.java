@@ -31,6 +31,9 @@ public class SettingsClient extends SettingsGlobal
 	
 	/** Should we announce when player joins into server that this mod has been loaded? */
 	public boolean ANNOUNCE_MOD_LOADED = true;
+
+    /** When connecting to a server, server syncs if it has mod installed and if functionality should be handled serverside. */
+    public static boolean handleInventorySwitchInServer = false;
 	
 	@Override
 	public void loadSettingsFromFile(File configurationFile)
