@@ -20,12 +20,8 @@ public class clientProxy extends CommonProxy
 	public void registerEvents()
 	{
 		super.registerEvents();
-		
-		//FMLCommonHandler.instance()register(new InventoryScrollEventHandler());
-		//FMLCommonHandler.instance().re
+
 		TickRegistry.registerTickHandler(new QuickHotbarEventHandler(), Side.CLIENT);
 		MinecraftForge.EVENT_BUS.register(new QuickHotbarEventHandler());
-		
-		NetworkRegistry.instance().registerConnectionHandler(new NetworkConnectionHandler());
 	}
 }

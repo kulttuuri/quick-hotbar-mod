@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import org.lwjgl.input.Keyboard;
 
 import com.kulttuuri.quickhotbar.proxy.IProxy;
@@ -27,7 +28,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid = QuickHotbarModInfo.MODID, version = QuickHotbarModInfo.VERSION)
-@NetworkMod(clientSideRequired=true, serverSideRequired=true, channels={"invpacket"}, packetHandler = QuickHotbarMod.class)
+@NetworkMod(clientSideRequired=false, serverSideRequired=true, channels={"invpacket", "invpserv"}, packetHandler = QuickHotbarMod.class)
 public class QuickHotbarMod implements IPacketHandler
 {
 	private static final int ITEMS_IN_ROW = 9;
@@ -59,20 +60,33 @@ public class QuickHotbarMod implements IPacketHandler
 	@Override
 	public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player)
 	{
+        //System.out.println("Handling custom packet: " + packet.channel);
+        if (packet.channel.equals("invpserv") && FMLCommonHandler.instance().getSide() == Side.CLIENT)
+        {
+            //System.out.println("ENABLING SERVERSIDE SUPPORT!");
+            clientSettings.handleInventorySwitchInServer = true;
+        }
 		if (packet.channel.equals("invpacket"))
 		{
 			DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(packet.data));
 			boolean goingUp = false;
-			try {
+            boolean changeRow = false;
+
+			try
+            {
 				goingUp = inputStream.readBoolean();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
+                changeRow = inputStream.readBoolean();
+			}
+            catch (IOException e1)
+            {
 				e1.printStackTrace();
 			}
+
 			try
 			{
 				InventoryPlayer playerInventory = ((EntityPlayerMP)player).inventory;
-				//System.out.println("HANDLING PACKET!");
+                int currentItem = playerInventory.currentItem;
+
 				ItemStack[][] items = new ItemStack[4][9];
 				items[0] = getItemsInRow(0, playerInventory);
 				items[1] = getItemsInRow(1, playerInventory);
@@ -81,18 +95,38 @@ public class QuickHotbarMod implements IPacketHandler
 				
 				if (goingUp)
 				{
-					setItemsForRow(0, items[1], playerInventory);
-					setItemsForRow(1, items[2], playerInventory);
-					setItemsForRow(2, items[3], playerInventory);
-					setItemsForRow(3, items[0], playerInventory);
+                    if (changeRow)
+                    {
+                        setItemsForRow(0, items[1], playerInventory);
+                        setItemsForRow(1, items[2], playerInventory);
+                        setItemsForRow(2, items[3], playerInventory);
+                        setItemsForRow(3, items[0], playerInventory);
+                    }
+                    else
+                    {
+                        setItemForRowSlot(1, currentItem, items[2][currentItem], playerInventory);
+                        setItemForRowSlot(2, currentItem, items[3][currentItem], playerInventory);
+                        setItemForRowSlot(3, currentItem, items[0][currentItem], playerInventory);
+                        setItemForRowSlot(0, currentItem, items[1][currentItem], playerInventory);
+                    }
 				}
 				else
 				{
-					setItemsForRow(0, items[3], playerInventory);
-					setItemsForRow(1, items[0], playerInventory);
-					setItemsForRow(2, items[1], playerInventory);
-					setItemsForRow(3, items[2], playerInventory);
-				}
+                    if (changeRow)
+                    {
+                        setItemsForRow(0, items[3], playerInventory);
+                        setItemsForRow(1, items[0], playerInventory);
+                        setItemsForRow(2, items[1], playerInventory);
+                        setItemsForRow(3, items[2], playerInventory);
+                    }
+                    else
+                    {
+                        setItemForRowSlot(1, currentItem, items[0][currentItem], playerInventory);
+                        setItemForRowSlot(2, currentItem, items[1][currentItem], playerInventory);
+                        setItemForRowSlot(3, currentItem, items[2][currentItem], playerInventory);
+                        setItemForRowSlot(0, currentItem, items[3][currentItem], playerInventory);
+                    }
+                }
 				
 				playerInventory.inventoryChanged = true;
 			}
@@ -108,10 +142,7 @@ public class QuickHotbarMod implements IPacketHandler
 		ItemStack[] items = new ItemStack[9];
     	for (int i = 0; i < 9; i++)
     	{
-    		int stack = i + (row * ITEMS_IN_ROW);
-    		//System.out.println("GETTING STACK: " + stack);
     		items[i] = inventory.getStackInSlot(i + (row * ITEMS_IN_ROW));
-    		//System.out.println(items[i]);
     	}
     	return items;
 	}
@@ -123,4 +154,9 @@ public class QuickHotbarMod implements IPacketHandler
     		inventory.setInventorySlotContents(i + (row * ITEMS_IN_ROW), items[i]);
     	}
 	}
+
+    private void setItemForRowSlot(int row, int slot, ItemStack item, InventoryPlayer inventory) throws Exception
+    {
+        inventory.setInventorySlotContents(row * ITEMS_IN_ROW + slot, item);
+    }
 }

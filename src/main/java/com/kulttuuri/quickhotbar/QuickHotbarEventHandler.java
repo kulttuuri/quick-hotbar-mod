@@ -124,7 +124,7 @@ public class QuickHotbarEventHandler implements ITickHandler
     {
     	if (renderQuickHotbarPreview && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY))
     	{
-	    	if (event.type == event.type.FOOD || event.type == event.type.HEALTH || event.type == event.type.EXPERIENCE)
+	    	if (event.type == event.type.FOOD || event.type == event.type.HEALTH || event.type == event.type.EXPERIENCE || event.type == event.type.ARMOR)
 	    	{
 	    		event.setCanceled(true);
 	    	}
@@ -249,7 +249,16 @@ public class QuickHotbarEventHandler implements ITickHandler
 
 		renderQuickHotbarPreview = true;
 
-        if (directionUp)
+        // If server had the mod installed, we let server handle the row / column switching
+        if (QuickHotbarMod.clientSettings.handleInventorySwitchInServer)
+        {
+            handleRowSwitchInServer(directionUp, changeRow);
+            //System.out.println("Handling row switch in server.");
+            return;
+        }
+
+        //System.out.println("Handling row switch in client.");
+        if (!directionUp)
         {
             if (changeRow)
             {
@@ -260,8 +269,8 @@ public class QuickHotbarEventHandler implements ITickHandler
             else
             {
                 int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
-                currentSlot = currentSlot - 1;
-                if (currentSlot < 0) currentSlot = 8;
+                currentSlot = currentSlot + 1;
+                if (currentSlot >= 9) currentSlot = 0;
                 switchItemsInSlots(3 * ITEMS_IN_ROW + currentSlot, 2 * ITEMS_IN_ROW + currentSlot);
                 switchItemsInSlots(2 * ITEMS_IN_ROW + currentSlot, 1 * ITEMS_IN_ROW + currentSlot);
                 switchItemsInSlots(1 * ITEMS_IN_ROW + currentSlot, 0 * ITEMS_IN_ROW + currentSlot);
@@ -278,24 +287,23 @@ public class QuickHotbarEventHandler implements ITickHandler
             else
             {
                 int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
-                currentSlot = currentSlot + 1;
-                if (currentSlot >= 9) currentSlot = 0;
+                currentSlot = currentSlot - 1;
+                if (currentSlot < 0) currentSlot = 8;
                 switchItemsInSlots(0 * ITEMS_IN_ROW + currentSlot, 1 * ITEMS_IN_ROW + currentSlot);
                 switchItemsInSlots(1 * ITEMS_IN_ROW + currentSlot, 2 * ITEMS_IN_ROW + currentSlot);
                 switchItemsInSlots(2 * ITEMS_IN_ROW + currentSlot, 3 * ITEMS_IN_ROW + currentSlot);
             }
         }
+	}
 
-
-        //switchItemRows(2, 3);
-
-		//InventoryScrollMod.instance.proxy.simpleNetworkWrapper.sendToServer(new PacketChangeCurrentRow(directionUp));
-        /*
+    private void handleRowSwitchInServer(boolean directionUp, boolean changeRow)
+    {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream(8);
 		DataOutputStream outputStream = new DataOutputStream(bos);
 		try
 		{
 	        outputStream.writeBoolean(directionUp);
+            outputStream.writeBoolean(changeRow);
 		}
 		catch (Exception ex)
 		{
@@ -306,28 +314,12 @@ public class QuickHotbarEventHandler implements ITickHandler
 		packet.channel = "invpacket";
 		packet.data = bos.toByteArray();
 		packet.length = bos.size();
-		
-		Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(packet);
-		*/
-	}
 
-    private ItemStack[] getItemsInRow(int row, InventoryPlayer inventory) throws Exception
-    {
-        ItemStack[] items = new ItemStack[9];
-        for (int i = 0; i < 9; i++)
-        {
-            int stack = i + (row * ITEMS_IN_ROW);
-            //System.out.println("GETTING STACK: " + stack);
-            items[i] = inventory.getStackInSlot(i + (row * ITEMS_IN_ROW));
-            //System.out.println(items[i]);
-        }
-        return items;
+		Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(packet);
     }
 
     private void switchItemRows(int row1, int row2)
     {
-        InventoryPlayer inventory = Minecraft.getMinecraft().thePlayer.inventory;
-
         for (int i = 0; i < ITEMS_IN_ROW; i++)
         {
             switchItemsInSlots(row1 * ITEMS_IN_ROW + i, row2 * ITEMS_IN_ROW + i);
