@@ -14,7 +14,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = QuickHotbarModInfo.MODID, version = QuickHotbarModInfo.VERSION)
+@Mod(modid = QuickHotbarModInfo.MODID, version = QuickHotbarModInfo.VERSION, acceptableRemoteVersions="*")
 public class QuickHotbarMod
 {
     @Instance(QuickHotbarModInfo.MODID)
