@@ -14,7 +14,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = QuickHotbarModInfo.MODID, version = QuickHotbarModInfo.VERSION)
+@Mod(modid = QuickHotbarModInfo.MODID, version = QuickHotbarModInfo.VERSION, acceptableRemoteVersions="*")
 public class QuickHotbarMod
 {
     @Instance(QuickHotbarModInfo.MODID)
@@ -31,6 +31,7 @@ public class QuickHotbarMod
     	if (event.getSide() == Side.CLIENT)
     	{
     		clientSettings.loadSettingsFromFile(event.getSuggestedConfigurationFile());
+            if (!clientSettings.MODE_SWITCHING_DEFAULT_ROW) QuickHotbarEventHandler.currentSwitchMode = QuickHotbarEventHandler.ENUM_CURRENT_SWITCH_MODE_COLUMN;
     	}
     }
     
