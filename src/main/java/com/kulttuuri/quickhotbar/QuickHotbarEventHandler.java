@@ -1,5 +1,7 @@
 package com.kulttuuri.quickhotbar;
 
+import com.kulttuuri.quickhotbar.gui.GuiSettingsBase;
+import com.kulttuuri.quickhotbar.gui.GuiSettingsInformation;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -33,7 +35,7 @@ public class QuickHotbarEventHandler
     public static String currentSwitchMode = ENUM_CURRENT_SWITCH_MODE_ROW;
 
 	private static boolean announceWelcomeMessage = false;
-	private static boolean renderQuickHotbarPreview = false;
+	public static boolean renderQuickHotbarPreview = false;
 	private static boolean isUpKeyDown = false;
 	private static boolean isDownKeyDown = false;
     private static boolean isModeSwitchKeyDown = false;
@@ -100,6 +102,11 @@ public class QuickHotbarEventHandler
             if (currentSwitchMode.equals(ENUM_CURRENT_SWITCH_MODE_ROW)) msg = "Switched to row scrolling.";
             else msg = "Switched to column scrolling.";
             Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation(msg, new Object[0]));
+        }
+
+        if (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.KEY_OPEN_MOD_SETTINGS_MENU))
+        {
+            Minecraft.getMinecraft().displayGuiScreen(GuiSettingsBase.currentGuiScreen);
         }
 
 		if (QuickHotbarMod.clientSettings.IMMEDIATELY_SHOW_POPUP_MENU && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY)) renderQuickHotbarPreview = true;

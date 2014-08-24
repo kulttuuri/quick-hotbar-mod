@@ -1,5 +1,8 @@
 package com.kulttuuri.quickhotbar;
 
+import com.kulttuuri.quickhotbar.gui.GuiSettingsBase;
+import com.kulttuuri.quickhotbar.gui.GuiSettingsInformation;
+import com.kulttuuri.quickhotbar.settings.SettingsServer;
 import org.lwjgl.input.Keyboard;
 
 import com.kulttuuri.quickhotbar.proxy.IProxy;
@@ -21,6 +24,7 @@ public class QuickHotbarMod
     public static QuickHotbarMod instance;
     
     public static SettingsClient clientSettings = new SettingsClient();
+    public static SettingsServer serverSettings = new SettingsServer();
     
     @SidedProxy(clientSide = "com.kulttuuri.quickhotbar.proxy.clientProxy", serverSide = "com.kulttuuri.quickhotbar.proxy.serverProxy")
     public static IProxy proxy;
@@ -39,5 +43,6 @@ public class QuickHotbarMod
     public void init(FMLInitializationEvent event)
     {
     	proxy.registerEvents();
+        GuiSettingsBase.currentGuiScreen = new GuiSettingsInformation();
     }
 }

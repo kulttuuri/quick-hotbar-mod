@@ -10,7 +10,7 @@ public class QuickHotbarEventHandlerServer
     @SubscribeEvent
     public void playerJoinedEvent(PlayerEvent.PlayerLoggedInEvent event)
     {
-        System.out.println(event.player.getDisplayName() + " !!! JOINED DAH SERVER!");
-        QuickHotbarMod.instance.proxy.simpleNetworkWrapper.sendTo(new PacketAnnounceServerAssist(true), (EntityPlayerMP) event.player);
+        //System.out.println(event.player.getDisplayName() + " !!! JOINED DAH SERVER!");
+        QuickHotbarMod.instance.proxy.simpleNetworkWrapper.sendTo(new PacketAnnounceServerAssist(true, QuickHotbarModInfo.VERSION), (EntityPlayerMP) event.player);
     }
 }
