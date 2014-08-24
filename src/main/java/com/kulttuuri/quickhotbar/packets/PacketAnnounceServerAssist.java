@@ -1,6 +1,7 @@
 package com.kulttuuri.quickhotbar.packets;
 
 import com.kulttuuri.quickhotbar.QuickHotbarMod;
+import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -16,7 +17,7 @@ public class PacketAnnounceServerAssist implements IMessage
 	{
 	}
 
-	public PacketAnnounceServerAssist(boolean serverHasModInstalled)
+	public PacketAnnounceServerAssist(boolean serverHasModInstalled, String serverModVersion)
 	{
 		this.serverHasModInstalled = serverHasModInstalled;
 	}
@@ -40,8 +41,15 @@ public class PacketAnnounceServerAssist implements IMessage
 		{
 			if (ctx.side == ctx.side.CLIENT)
 			{
-                System.out.println("Server synced that it has mod installed!");
-                QuickHotbarMod.clientSettings.handleInventorySwitchInServer = true;
+                //System.out.println("Server synced that it has mod installed!");
+                try
+                {
+                    QuickHotbarMod.clientSettings.handleInventorySwitchInServer = true;
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
 			return null;
 		}
