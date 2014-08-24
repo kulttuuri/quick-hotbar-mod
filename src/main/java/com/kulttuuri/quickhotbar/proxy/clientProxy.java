@@ -1,5 +1,7 @@
 package com.kulttuuri.quickhotbar.proxy;
 
+import com.kulttuuri.quickhotbar.gui.GuiSettingsBase;
+import com.kulttuuri.quickhotbar.gui.GuiSettingsInformation;
 import org.lwjgl.input.Keyboard;
 
 import com.kulttuuri.quickhotbar.NetworkConnectionHandler;
@@ -23,5 +25,7 @@ public class clientProxy extends CommonProxy
 
 		TickRegistry.registerTickHandler(new QuickHotbarEventHandler(), Side.CLIENT);
 		MinecraftForge.EVENT_BUS.register(new QuickHotbarEventHandler());
+
+        GuiSettingsBase.currentGuiScreen = new GuiSettingsInformation();
 	}
 }

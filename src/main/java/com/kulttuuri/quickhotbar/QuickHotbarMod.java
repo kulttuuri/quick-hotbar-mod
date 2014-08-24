@@ -37,6 +37,7 @@ public class QuickHotbarMod implements IPacketHandler
     public static QuickHotbarMod instance;
     
     public static SettingsClient clientSettings = new SettingsClient();
+    public static SettingsServer serverSettings = new SettingsServer();
     
     @SidedProxy(clientSide = "com.kulttuuri.quickhotbar.proxy.clientProxy", serverSide = "com.kulttuuri.quickhotbar.proxy.serverProxy")
     public static IProxy proxy;
