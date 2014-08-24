@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.util.EnumSet;
 
+import com.kulttuuri.quickhotbar.gui.GuiSettingsBase;
 import net.minecraft.block.Block;
 import net.minecraft.network.packet.Packet101CloseWindow;
 import net.minecraft.network.packet.Packet102WindowClick;
@@ -48,7 +49,7 @@ public class QuickHotbarEventHandler implements ITickHandler
     private static boolean isModeSwitchKeyDown = false;
 	
 	/** Should we render other item slots in the ingame gui. */
-	private static boolean renderQuickHotbarPreview = false;
+	public static boolean renderQuickHotbarPreview = false;
 
     private static final int ITEMS_IN_ROW = 9;
 
@@ -73,8 +74,13 @@ public class QuickHotbarEventHandler implements ITickHandler
             Minecraft.getMinecraft().thePlayer.addChatMessage(msg);
         }
 
+        if (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.KEY_OPEN_MOD_SETTINGS_MENU))
+        {
+            Minecraft.getMinecraft().displayGuiScreen(GuiSettingsBase.currentGuiScreen);
+        }
+
 		if (QuickHotbarMod.clientSettings.IMMEDIATELY_SHOW_POPUP_MENU && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY)) renderQuickHotbarPreview = true;
-		
+
 		if (QuickHotbarMod.clientSettings.ALLOW_SCROLLING_WITH_KEYBOARD)
 		{
 			if (!isUpKeyDown && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP))
