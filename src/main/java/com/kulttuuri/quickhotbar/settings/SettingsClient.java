@@ -13,6 +13,8 @@ public class SettingsClient extends SettingsGlobal
 	public int SCROLLING_KEY = Keyboard.KEY_LCONTROL;
     /** Key that needs to be held down for user to be able to scroll the inventory row columns. */
     public int SCROLLING_KEY_SWITCH_MODE = Keyboard.KEY_C;
+    /** Key that opens settings menu for the mod. User needs to also hold down the SCROLLING_KEY. */
+    public int KEY_OPEN_MOD_SETTINGS_MENU = Keyboard.KEY_M;
     /** Should we reverse the mousewheel scrolling? */
     public boolean REVERSE_MOUSEWHEEL_SCROLLING = false;
 	/** Should the item popup menu automatically come up once you press the scrolling key? */
@@ -21,41 +23,59 @@ public class SettingsClient extends SettingsGlobal
     public boolean ALLOW_MODE_SWITCHING = true;
     /** Should we use row scrolling by default? If false we will use column scrolling by default. */
 	public boolean MODE_SWITCHING_DEFAULT_ROW = true;
-
 	/** Should we also allow user to scroll with keyboard keys? */
 	public boolean ALLOW_SCROLLING_WITH_KEYBOARD = true;
 	/** Key used for scrolling inventory rows up with keyboard. */
 	public int SCROLLING_KEY_UP = Keyboard.KEY_UP;
 	/** Key used for scrolling inventory rows down with keyboard. */
 	public int SCROLLING_KEY_DOWN = Keyboard.KEY_DOWN;
-	
 	/** Should we announce when player joins into server that this mod has been loaded? */
 	public boolean ANNOUNCE_MOD_LOADED = true;
 
     /** When connecting to a server, server syncs if it has mod installed and if functionality should be handled serverside. */
     public static boolean handleInventorySwitchInServer = false;
-	
+
+    private static boolean SETTINGS_LOADED = false;
+
+    private Configuration config;
+    private Property announceModLoaded;
+    private Property keyBindingsScroll;
+    private Property keyBindingSwitchMode;
+    private Property keyBindingOpenSettingsMenu;
+    private Property allowModeSwitching;
+    private Property modeSwitchingIsDefaultMode;
+    private Property reverseMouseWheelScrolling;
+    private Property immediately_show_popup_menu;
+    private Property allowKeyboardScroll;
+    private Property scrollKeyUp;
+    private Property scrollKeyDown;
+
 	@Override
 	public void loadSettingsFromFile(File configurationFile)
 	{
-		Configuration config = new Configuration(configurationFile);
+        if (SETTINGS_LOADED) return;
+
+        SETTINGS_LOADED = true;
+		config = new Configuration(configurationFile);
 		config.load();
 		
-		Property announceModLoaded = config.get("general", "announce_mod_loaded", true);
-		Property keyBindingsScroll = config.get("keybindings", "scrolling_key", "KEY_LCONTROL");
-        Property keyBindingSwitchMode = config.get("keybindings", "switch_scrolling_mode_key", "KEY_C");
-        Property allowModeSwitching = config.get("general", "allow_mode_switching", true);
-        Property modeSwitchingIsDefaultMode = config.get("general", "mode_switching_default_mode", true);
-        Property reverseMouseWheelScrolling = config.get("general", "reverse_mousewheel_scrolling", false);
-		Property immediately_show_popup_menu = config.get("general", "immediately_show_popup_menu", false);
-		Property allowKeyboardScroll = config.get("general", "allow_scrolling_with_keyboard_keys", true);
-		Property scrollKeyUp = config.get("keybindings", "keyboard_scroll_key_up", "KEY_UP");
-		Property scrollKeyDown = config.get("keybindings", "keyboard_scroll_key_down", "KEY_DOWN");
+		announceModLoaded = config.get("general", "announce_mod_loaded", true);
+		keyBindingsScroll = config.get("keybindings", "scrolling_key", "KEY_LCONTROL");
+        keyBindingSwitchMode = config.get("keybindings", "switch_scrolling_mode_key", "KEY_C");
+        keyBindingOpenSettingsMenu = config.get("keybindings", "open_settings_menu_key", "KEY_M");
+        allowModeSwitching = config.get("general", "allow_mode_switching", true);
+        modeSwitchingIsDefaultMode = config.get("general", "mode_switching_default_mode", true);
+        reverseMouseWheelScrolling = config.get("general", "reverse_mousewheel_scrolling", false);
+		immediately_show_popup_menu = config.get("general", "immediately_show_popup_menu", false);
+		allowKeyboardScroll = config.get("general", "allow_scrolling_with_keyboard_keys", true);
+		scrollKeyUp = config.get("keybindings", "keyboard_scroll_key_up", "KEY_UP");
+		scrollKeyDown = config.get("keybindings", "keyboard_scroll_key_down", "KEY_DOWN");
 
 		// Load settings
 		ANNOUNCE_MOD_LOADED = announceModLoaded.getBoolean(true);
 		SCROLLING_KEY = loadKeybindingFromFile(keyBindingsScroll.getString().trim(), Keyboard.KEY_LCONTROL);
         SCROLLING_KEY_SWITCH_MODE = loadKeybindingFromFile(keyBindingSwitchMode.getString().trim(), Keyboard.KEY_LCONTROL);
+        KEY_OPEN_MOD_SETTINGS_MENU = loadKeybindingFromFile(keyBindingOpenSettingsMenu.getString().trim(), Keyboard.KEY_M);
         ALLOW_MODE_SWITCHING = allowModeSwitching.getBoolean(true);
         MODE_SWITCHING_DEFAULT_ROW = modeSwitchingIsDefaultMode.getBoolean(true);
 		IMMEDIATELY_SHOW_POPUP_MENU = immediately_show_popup_menu.getBoolean(false);
@@ -69,6 +89,7 @@ public class SettingsClient extends SettingsGlobal
 		keyBindingsScroll.comment = "Key which you need to hold down to scroll between inventory rows. Default: KEY_LCONTROL. Should you wish to change this key, you can find all supported keys from here: http://www.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html";
         keyBindingSwitchMode.comment = "Key which you can use to switch between row and column switching while also holding the scrolling key. Default: KEY_C. Should you wish to change this key, you can find all supported keys from here: http://www.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html";
         allowModeSwitching.comment = "Should you be able to change between row and column switching modes. Default: true";
+        keyBindingOpenSettingsMenu.comment = "Keybinding which opens the settings menu. Note that you will also need to hold down the scrolling key to open the menu, for ex. ctrl + m. Default: KEY_M";
         modeSwitchingIsDefaultMode.comment = "If true, by default you will browse between rows. If false by default you will browse through columns. Default: true";
         immediately_show_popup_menu.comment = "If this is true, popup menu will be shown immediately instead of waiting till user scrolls. Default: false";
 		reverseMouseWheelScrolling.comment = "If this is true, mousewheel scrolling will be reversed. Default: false";
@@ -78,6 +99,23 @@ public class SettingsClient extends SettingsGlobal
 		
 		config.save();
 	}
+
+    public void saveSettings()
+    {
+        announceModLoaded.set(ANNOUNCE_MOD_LOADED);
+        keyBindingsScroll.set(Keyboard.getKeyName(SCROLLING_KEY));
+        keyBindingSwitchMode.set(Keyboard.getKeyName(SCROLLING_KEY_SWITCH_MODE));
+        keyBindingOpenSettingsMenu.set(Keyboard.getKeyName(KEY_OPEN_MOD_SETTINGS_MENU));
+        allowModeSwitching.set(ALLOW_MODE_SWITCHING);
+        modeSwitchingIsDefaultMode.set(MODE_SWITCHING_DEFAULT_ROW);
+        reverseMouseWheelScrolling.set(REVERSE_MOUSEWHEEL_SCROLLING);
+        immediately_show_popup_menu.set(IMMEDIATELY_SHOW_POPUP_MENU);
+        allowKeyboardScroll.set(ALLOW_SCROLLING_WITH_KEYBOARD);
+        scrollKeyUp.set(Keyboard.getKeyName(SCROLLING_KEY_UP));
+        scrollKeyDown.set(Keyboard.getKeyName(SCROLLING_KEY_DOWN));
+
+        config.save();
+    }
 	
 	private int loadKeybindingFromFile(String keyBindingKey, int defaultKey)
 	{
