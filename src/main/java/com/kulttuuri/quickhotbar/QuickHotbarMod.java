@@ -1,14 +1,10 @@
 package com.kulttuuri.quickhotbar;
 
-import com.kulttuuri.quickhotbar.gui.GuiSettingsBase;
-import com.kulttuuri.quickhotbar.gui.GuiSettingsInformation;
 import com.kulttuuri.quickhotbar.settings.SettingsServer;
-import org.lwjgl.input.Keyboard;
 
 import com.kulttuuri.quickhotbar.proxy.IProxy;
 import com.kulttuuri.quickhotbar.settings.SettingsClient;
 
-import net.minecraft.init.Blocks;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -43,6 +39,5 @@ public class QuickHotbarMod
     public void init(FMLInitializationEvent event)
     {
     	proxy.registerEvents();
-        GuiSettingsBase.currentGuiScreen = new GuiSettingsInformation();
     }
 }
