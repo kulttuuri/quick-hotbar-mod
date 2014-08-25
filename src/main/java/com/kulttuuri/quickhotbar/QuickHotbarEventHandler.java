@@ -46,12 +46,15 @@ public class QuickHotbarEventHandler
 	public void clientJoinedEvent(ClientConnectedToServerEvent event)
 	{
 		announceWelcomeMessage = true;
+
+        if (QuickHotbarMod.clientSettings.MODE_SWITCHING_DEFAULT_ROW) QuickHotbarEventHandler.currentSwitchMode = QuickHotbarEventHandler.ENUM_CURRENT_SWITCH_MODE_ROW;
+        else QuickHotbarEventHandler.currentSwitchMode = QuickHotbarEventHandler.ENUM_CURRENT_SWITCH_MODE_COLUMN;
 	}
 
     @SubscribeEvent
     public void disconnectEvent(FMLNetworkEvent.ClientDisconnectionFromServerEvent event)
     {
-        System.out.println("CLIENT DISCONECTED EVENT!!!!");
+        //System.out.println("CLIENT DISCONECTED EVENT!!!!");
         QuickHotbarMod.clientSettings.handleInventorySwitchInServer = false;
     }
 	
@@ -63,10 +66,13 @@ public class QuickHotbarEventHandler
 			String keyNameScrolling = Keyboard.getKeyName(settings.SCROLLING_KEY).equals("LCONTROL") ? "left ctrl" : Keyboard.getKeyName(settings.SCROLLING_KEY).toLowerCase();
 			String keyNameUp = Keyboard.getKeyName(settings.SCROLLING_KEY_UP);
 			String keyNameDown = Keyboard.getKeyName(settings.SCROLLING_KEY_DOWN);
+            String keyNameOpenmenu = Keyboard.getKeyName(settings.KEY_OPEN_MOD_SETTINGS_MENU);
 			String orText = settings.ALLOW_SCROLLING_WITH_KEYBOARD == true ? " (or keys " + keyNameUp.toLowerCase() + " & " + keyNameDown.toLowerCase() + ")" : "";
 			String msg = "Quick Hotbar " + QuickHotbarModInfo.VERSION + " loaded. ";
 			msg = msg + "Hold down " + keyNameScrolling + " and use mouse wheel" + orText + " to scroll between inventory rows.";
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation(msg, new Object[0]));
+
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation(" " + keyNameScrolling + " and " + keyNameOpenmenu + " to view mod settings.", new Object[0]));
 		}
 	}
 	
