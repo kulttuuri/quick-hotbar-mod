@@ -1,7 +1,6 @@
 package com.kulttuuri.quickhotbar;
 
 import com.kulttuuri.quickhotbar.gui.GuiSettingsBase;
-import com.kulttuuri.quickhotbar.gui.GuiSettingsInformation;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -125,7 +124,7 @@ public class QuickHotbarEventHandler
 				try
 				{
 					//Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(1);
-					switchItemRows(true);
+					switchItemRows(true, true);
 				}
 				catch (Exception e)
 				{
@@ -138,7 +137,7 @@ public class QuickHotbarEventHandler
 				try
 				{
 					//Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(-1);
-					switchItemRows(false);
+					switchItemRows(false, true);
 				}
 				catch (Exception e)
 				{
@@ -279,7 +278,7 @@ public class QuickHotbarEventHandler
 		        try
 		        {
 		        	Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(1);
-		        	switchItemRows(false);
+		        	switchItemRows(false, false);
 		        }
 		        catch (Exception e)
 		        {
@@ -292,7 +291,7 @@ public class QuickHotbarEventHandler
 		        try
 		        {
 		        	Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(-1);
-		        	switchItemRows(true);
+		        	switchItemRows(true, false);
 		        }
 		        catch (Exception e)
 		        {
@@ -302,11 +301,16 @@ public class QuickHotbarEventHandler
 	    }
 	}
 
-    private void switchItemRows(boolean directionUp) throws Exception
+    private void switchItemRows(boolean directionUp, boolean isScrollingWithKeyboard) throws Exception
     {
-        directionUp = QuickHotbarMod.clientSettings.REVERSE_MOUSEWHEEL_SCROLLING ? !directionUp : directionUp;
-        boolean changeRow = currentSwitchMode.equals(ENUM_CURRENT_SWITCH_MODE_ROW);
+        boolean reverseScrolling = QuickHotbarMod.clientSettings.REVERSE_MOUSEWHEEL_SCROLLING;
+        // Direction can only be reversed with mouse scrolling
+        if (!isScrollingWithKeyboard)
+        {
+            directionUp = reverseScrolling ? !directionUp : directionUp;
+        }
 
+        boolean changeRow = currentSwitchMode.equals(ENUM_CURRENT_SWITCH_MODE_ROW);
         renderQuickHotbarPreview = true;
 
         // If server had the mod installed, we let server handle the row / column switching
@@ -328,9 +332,7 @@ public class QuickHotbarEventHandler
             }
             else
             {
-                int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
-                currentSlot = currentSlot + 1;
-                if (currentSlot >= 9) currentSlot = 0;
+                int currentSlot = getCurrentSlot(directionUp, reverseScrolling, isScrollingWithKeyboard);
                 switchItemsInSlots(3 * ITEMS_IN_ROW + currentSlot, 2 * ITEMS_IN_ROW + currentSlot);
                 switchItemsInSlots(2 * ITEMS_IN_ROW + currentSlot, 1 * ITEMS_IN_ROW + currentSlot);
                 switchItemsInSlots(1 * ITEMS_IN_ROW + currentSlot, 0 * ITEMS_IN_ROW + currentSlot);
@@ -346,13 +348,30 @@ public class QuickHotbarEventHandler
             }
             else
             {
-                int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
-                currentSlot = currentSlot - 1;
-                if (currentSlot < 0) currentSlot = 8;
+                int currentSlot = getCurrentSlot(directionUp, reverseScrolling, isScrollingWithKeyboard);
                 switchItemsInSlots(0 * ITEMS_IN_ROW + currentSlot, 1 * ITEMS_IN_ROW + currentSlot);
                 switchItemsInSlots(1 * ITEMS_IN_ROW + currentSlot, 2 * ITEMS_IN_ROW + currentSlot);
                 switchItemsInSlots(2 * ITEMS_IN_ROW + currentSlot, 3 * ITEMS_IN_ROW + currentSlot);
             }
+        }
+    }
+
+    private int getCurrentSlot(boolean directionUp, boolean reverseScrolling, boolean isScrollingWithKeyboard)
+    {
+        if ((!reverseScrolling && !directionUp) || (reverseScrolling && directionUp))
+        {
+            int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
+            if (!isScrollingWithKeyboard) currentSlot = currentSlot + 1;
+            if (currentSlot >= 9) currentSlot = 0;
+            return currentSlot;
+        }
+        else
+        {
+            int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
+            if (!isScrollingWithKeyboard) currentSlot = currentSlot - 1;
+            if (currentSlot < 0) currentSlot = 8;
+            return currentSlot;
+
         }
     }
 
