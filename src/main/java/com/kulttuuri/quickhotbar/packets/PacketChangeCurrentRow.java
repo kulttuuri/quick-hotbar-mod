@@ -1,6 +1,5 @@
 package com.kulttuuri.quickhotbar.packets;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import io.netty.buffer.ByteBuf;

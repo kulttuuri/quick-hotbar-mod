@@ -1,11 +1,8 @@
 package com.kulttuuri.quickhotbar.gui;
 
-import com.kulttuuri.quickhotbar.QuickHotbarMod;
 import com.kulttuuri.quickhotbar.QuickHotbarModInfo;
-import com.kulttuuri.quickhotbar.gui.GuiSettingsBase;
 import com.kulttuuri.quickhotbar.gui.components.GuiButtonBetter;
 import com.kulttuuri.quickhotbar.settings.SettingsClient;
-import com.kulttuuri.quickhotbar.settings.SettingsServer;
 import net.minecraft.client.gui.GuiButton;
 
 /**
@@ -30,19 +27,29 @@ public class GuiSettingsInformation extends GuiSettingsBase
         buttonList.add(new GuiButtonBetter(BUTTON_MOD_NETWORK_POST_THREAD, width / 2, height / 2, 100, 20, "Mod Information"));
     }
 
-    @Override protected void actionPerformed(GuiButton guibutton)
+    @Override
+    protected void actionPerformed(GuiButton guibutton)
     {
         super.actionPerformed(guibutton);
 
         if (guibutton.id == BUTTON_MOD_NETWORK_POST_THREAD)
         {
-            System.out.println("Pressed OPEN URL button");
             String url = "http://adf.ly/7344368/minecraft-forum-post";
-            // TODO: Open url in browser, use MC vanilla method for that.
+            // Try to open browser with the URL
+            try
+            {
+                java.net.URI uri = new java.net.URI(url);
+                java.awt.Desktop.getDesktop().browse(uri);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 
-    @Override public void drawScreen(int i, int j, float f)
+    @Override
+    public void drawScreen(int i, int j, float f)
     {
         super.drawScreen(i, j, f);
 
