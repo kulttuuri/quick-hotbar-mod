@@ -1,6 +1,5 @@
 package com.kulttuuri.quickhotbar.proxy;
 
-import com.kulttuuri.quickhotbar.QuickHotbarMod;
 import com.kulttuuri.quickhotbar.QuickHotbarModInfo;
 
 import cpw.mods.fml.common.network.NetworkRegistry;
