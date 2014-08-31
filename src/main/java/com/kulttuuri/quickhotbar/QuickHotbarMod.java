@@ -31,7 +31,6 @@ public class QuickHotbarMod
     	if (event.getSide() == Side.CLIENT)
     	{
     		clientSettings.loadSettingsFromFile(event.getSuggestedConfigurationFile());
-            if (!clientSettings.MODE_SWITCHING_DEFAULT_ROW) QuickHotbarEventHandler.currentSwitchMode = QuickHotbarEventHandler.ENUM_CURRENT_SWITCH_MODE_COLUMN;
     	}
     }
     

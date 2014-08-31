@@ -29,10 +29,6 @@ public class QuickHotbarEventHandler
 	private static final ResourceLocation WIDGETS = new ResourceLocation("textures/gui/widgets.png");
 	private static final RenderItem itemRenderer = new RenderItem();
 
-    public static final String ENUM_CURRENT_SWITCH_MODE_ROW = "switch_mode_row";
-    public static final String ENUM_CURRENT_SWITCH_MODE_COLUMN = "switch_mode_column";
-    public static String currentSwitchMode = ENUM_CURRENT_SWITCH_MODE_ROW;
-
 	private static boolean announceWelcomeMessage = false;
 	public static boolean renderQuickHotbarPreview = false;
 	private static boolean isUpKeyDown = false;
@@ -45,15 +41,11 @@ public class QuickHotbarEventHandler
 	public void clientJoinedEvent(ClientConnectedToServerEvent event)
 	{
 		announceWelcomeMessage = true;
-
-        if (QuickHotbarMod.clientSettings.MODE_SWITCHING_DEFAULT_ROW) QuickHotbarEventHandler.currentSwitchMode = QuickHotbarEventHandler.ENUM_CURRENT_SWITCH_MODE_ROW;
-        else QuickHotbarEventHandler.currentSwitchMode = QuickHotbarEventHandler.ENUM_CURRENT_SWITCH_MODE_COLUMN;
 	}
 
     @SubscribeEvent
     public void disconnectEvent(FMLNetworkEvent.ClientDisconnectionFromServerEvent event)
     {
-        //System.out.println("CLIENT DISCONECTED EVENT!!!!");
         QuickHotbarMod.clientSettings.handleInventorySwitchInServer = false;
     }
 	
@@ -66,12 +58,17 @@ public class QuickHotbarEventHandler
 			String keyNameUp = Keyboard.getKeyName(settings.SCROLLING_KEY_UP);
 			String keyNameDown = Keyboard.getKeyName(settings.SCROLLING_KEY_DOWN);
             String keyNameOpenmenu = Keyboard.getKeyName(settings.KEY_OPEN_MOD_SETTINGS_MENU);
-			String orText = settings.ALLOW_SCROLLING_WITH_KEYBOARD == true ? " (or keys " + keyNameUp.toLowerCase() + " & " + keyNameDown.toLowerCase() + ")" : "";
-			String msg = "Quick Hotbar " + QuickHotbarModInfo.VERSION + " loaded. ";
-			msg = msg + "Hold down " + keyNameScrolling + " and use mouse wheel" + orText + " to scroll between inventory rows.";
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation(msg, new Object[0]));
+            String keyNameSwitchMode = Keyboard.getKeyName(settings.SCROLLING_KEY_SWITCH_MODE);
 
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation(" " + keyNameScrolling + " and " + keyNameOpenmenu + " to view mod settings.", new Object[0]));
+			String orText = settings.ALLOW_SCROLLING_WITH_KEYBOARD ? " (or " + keyNameUp.toLowerCase() + " & " + keyNameDown.toLowerCase() + ")" : "";
+            String switchModeText = settings.ALLOW_MODE_SWITCHING ? keyNameScrolling + " + " + keyNameSwitchMode + " to switch mode. " : "";
+			String openMenuText = settings.ENABLE_SETTING_MENU ? keyNameScrolling + " + " + keyNameOpenmenu + " to view mod settings." : "";
+
+            String msg = "Quick Hotbar " + QuickHotbarModInfo.VERSION + " loaded. ";
+			msg = msg + keyNameScrolling + " + mouse wheel" + orText + " to scroll. ";
+            msg = msg + switchModeText;
+            msg = msg + openMenuText;
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation(msg, new Object[0]));
 		}
 	}
 	
@@ -82,6 +79,8 @@ public class QuickHotbarEventHandler
     @SubscribeEvent
     public void renderChatMessagesAboveInventorySlotsPreview(RenderGameOverlayEvent.Chat event)
     {
+        if (Minecraft.getMinecraft().currentScreen != null) return;
+
         if (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && renderQuickHotbarPreview)
         {
             event.posY -= 60;
@@ -91,6 +90,8 @@ public class QuickHotbarEventHandler
     @SubscribeEvent
 	public void handleKeyboardPresses(RenderGameOverlayEvent.Pre event)
 	{
+        if (Minecraft.getMinecraft().currentScreen != null) return;
+
         if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_SWITCH_MODE)) isModeSwitchKeyDown = false;
         if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP)) isUpKeyDown = false;
         if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_DOWN)) isDownKeyDown = false;
@@ -101,15 +102,17 @@ public class QuickHotbarEventHandler
             QuickHotbarMod.clientSettings.ALLOW_MODE_SWITCHING)
         {
             isModeSwitchKeyDown = true;
-            currentSwitchMode = currentSwitchMode.equals(ENUM_CURRENT_SWITCH_MODE_ROW) ? ENUM_CURRENT_SWITCH_MODE_COLUMN : ENUM_CURRENT_SWITCH_MODE_ROW;
+            QuickHotbarMod.clientSettings.setCurrentSwitchMode(!QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW);
 
             String msg = "";
-            if (currentSwitchMode.equals(ENUM_CURRENT_SWITCH_MODE_ROW)) msg = "Switched to row scrolling.";
+            if (QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW) msg = "Switched to row scrolling.";
             else msg = "Switched to column scrolling.";
             Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation(msg, new Object[0]));
         }
 
-        if (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.KEY_OPEN_MOD_SETTINGS_MENU))
+        if (QuickHotbarMod.clientSettings.ENABLE_SETTING_MENU
+            && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY)
+            && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.KEY_OPEN_MOD_SETTINGS_MENU))
         {
             Minecraft.getMinecraft().displayGuiScreen(GuiSettingsBase.currentGuiScreen);
         }
@@ -310,7 +313,7 @@ public class QuickHotbarEventHandler
             directionUp = reverseScrolling ? !directionUp : directionUp;
         }
 
-        boolean changeRow = currentSwitchMode.equals(ENUM_CURRENT_SWITCH_MODE_ROW);
+        boolean changeRow = QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW;
         renderQuickHotbarPreview = true;
 
         // If server had the mod installed, we let server handle the row / column switching
