@@ -21,8 +21,8 @@ public class SettingsClient extends SettingsGlobal
 	public boolean IMMEDIATELY_SHOW_POPUP_MENU = false;
     /** Do we allow user to switch between row and column switching? */
     public boolean ALLOW_MODE_SWITCHING = true;
-    /** Should we use row scrolling by default? If false we will use column scrolling by default. */
-	public boolean MODE_SWITCHING_DEFAULT_ROW = true;
+    /** Is current switch mode rows? If false, we switch columns instead of rows. */
+	public boolean CURRENT_SWITCH_MODE_ROW = true;
 	/** Should we also allow user to scroll with keyboard keys? */
 	public boolean ALLOW_SCROLLING_WITH_KEYBOARD = true;
 	/** Key used for scrolling inventory rows up with keyboard. */
@@ -31,6 +31,8 @@ public class SettingsClient extends SettingsGlobal
 	public int SCROLLING_KEY_DOWN = Keyboard.KEY_DOWN;
 	/** Should we announce when player joins into server that this mod has been loaded? */
 	public boolean ANNOUNCE_MOD_LOADED = true;
+    /** Is user able to open mod settings menu? */
+    public boolean ENABLE_SETTING_MENU = true;
 
     /** When connecting to a server, server syncs if it has mod installed and if functionality should be handled serverside. */
     public static boolean handleInventorySwitchInServer = false;
@@ -39,6 +41,7 @@ public class SettingsClient extends SettingsGlobal
 
     private Configuration config;
     private Property announceModLoaded;
+    private Property enableSettingMenu;
     private Property keyBindingsScroll;
     private Property keyBindingSwitchMode;
     private Property keyBindingOpenSettingsMenu;
@@ -60,6 +63,7 @@ public class SettingsClient extends SettingsGlobal
 		config.load();
 		
 		announceModLoaded = config.get("general", "announce_mod_loaded", true);
+        enableSettingMenu = config.get("general", "enable_settings_menu_gui", true);
 		keyBindingsScroll = config.get("keybindings", "scrolling_key", "KEY_LCONTROL");
         keyBindingSwitchMode = config.get("keybindings", "switch_scrolling_mode_key", "KEY_C");
         keyBindingOpenSettingsMenu = config.get("keybindings", "open_settings_menu_key", "KEY_M");
@@ -73,11 +77,12 @@ public class SettingsClient extends SettingsGlobal
 
 		// Load settings
 		ANNOUNCE_MOD_LOADED = announceModLoaded.getBoolean(true);
+        ENABLE_SETTING_MENU = enableSettingMenu.getBoolean(true);
 		SCROLLING_KEY = loadKeybindingFromFile(keyBindingsScroll.getString().trim(), Keyboard.KEY_LCONTROL);
         SCROLLING_KEY_SWITCH_MODE = loadKeybindingFromFile(keyBindingSwitchMode.getString().trim(), Keyboard.KEY_LCONTROL);
         KEY_OPEN_MOD_SETTINGS_MENU = loadKeybindingFromFile(keyBindingOpenSettingsMenu.getString().trim(), Keyboard.KEY_M);
         ALLOW_MODE_SWITCHING = allowModeSwitching.getBoolean(true);
-        MODE_SWITCHING_DEFAULT_ROW = modeSwitchingIsDefaultMode.getBoolean(true);
+        CURRENT_SWITCH_MODE_ROW = modeSwitchingIsDefaultMode.getBoolean(true);
 		IMMEDIATELY_SHOW_POPUP_MENU = immediately_show_popup_menu.getBoolean(false);
         REVERSE_MOUSEWHEEL_SCROLLING = reverseMouseWheelScrolling.getBoolean(false);
 		ALLOW_SCROLLING_WITH_KEYBOARD = allowKeyboardScroll.getBoolean(true);
@@ -86,7 +91,8 @@ public class SettingsClient extends SettingsGlobal
 		
 		// Save comments for settings
 		announceModLoaded.comment = "When you join a game, this mod prints out that is has been loaded and it's keybindings. Set to false to disable this behavior. Default: true";
-		keyBindingsScroll.comment = "Key which you need to hold down to scroll between inventory rows. Default: KEY_LCONTROL. Should you wish to change this key, you can find all supported keys from here: http://www.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html";
+		enableSettingMenu.comment = "If this is true, you are able to open mod settings menu. Default: true";
+        keyBindingsScroll.comment = "Key which you need to hold down to scroll between inventory rows. Default: KEY_LCONTROL. Should you wish to change this key, you can find all supported keys from here: http://www.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html";
         keyBindingSwitchMode.comment = "Key which you can use to switch between row and column switching while also holding the scrolling key. Default: KEY_C. Should you wish to change this key, you can find all supported keys from here: http://www.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html";
         allowModeSwitching.comment = "Should you be able to change between row and column switching modes. Default: true";
         keyBindingOpenSettingsMenu.comment = "Keybinding which opens the settings menu. Note that you will also need to hold down the scrolling key to open the menu, for ex. ctrl + m. Default: KEY_M";
@@ -107,7 +113,7 @@ public class SettingsClient extends SettingsGlobal
         keyBindingSwitchMode.set(Keyboard.getKeyName(SCROLLING_KEY_SWITCH_MODE));
         keyBindingOpenSettingsMenu.set(Keyboard.getKeyName(KEY_OPEN_MOD_SETTINGS_MENU));
         allowModeSwitching.set(ALLOW_MODE_SWITCHING);
-        modeSwitchingIsDefaultMode.set(MODE_SWITCHING_DEFAULT_ROW);
+        modeSwitchingIsDefaultMode.set(CURRENT_SWITCH_MODE_ROW);
         reverseMouseWheelScrolling.set(REVERSE_MOUSEWHEEL_SCROLLING);
         immediately_show_popup_menu.set(IMMEDIATELY_SHOW_POPUP_MENU);
         allowKeyboardScroll.set(ALLOW_SCROLLING_WITH_KEYBOARD);
@@ -135,4 +141,11 @@ public class SettingsClient extends SettingsGlobal
 			return Keyboard.getKeyIndex(keyBindingKey);
 		}
 	}
+
+    public void setCurrentSwitchMode(boolean rowSwitchMode)
+    {
+        modeSwitchingIsDefaultMode.set(rowSwitchMode);
+        CURRENT_SWITCH_MODE_ROW = rowSwitchMode;
+        config.save();
+    }
 }
