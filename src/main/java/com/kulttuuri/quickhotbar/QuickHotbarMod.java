@@ -5,7 +5,6 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import cpw.mods.fml.common.FMLCommonHandler;
-import org.lwjgl.input.Keyboard;
 
 import com.kulttuuri.quickhotbar.proxy.IProxy;
 import com.kulttuuri.quickhotbar.settings.SettingsClient;
@@ -48,7 +47,6 @@ public class QuickHotbarMod implements IPacketHandler
     	if (event.getSide() == Side.CLIENT)
     	{
     		clientSettings.loadSettingsFromFile(event.getSuggestedConfigurationFile());
-            if (!clientSettings.MODE_SWITCHING_DEFAULT_ROW) QuickHotbarEventHandler.currentSwitchMode = QuickHotbarEventHandler.ENUM_CURRENT_SWITCH_MODE_COLUMN;
         }
     }
     

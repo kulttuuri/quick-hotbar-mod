@@ -19,7 +19,6 @@ public class GuiSettingsGeneral extends GuiSettingsBase
     private static final int BUTTON_IMMEDIATELY_SHOW_POPUP = 2;
     private static final int BUTTON_ALLOW_SCROLLING_WITH_KEYBOARD = 3;
     private static final int BUTTON_ALLOW_MODE_SWITCH = 4;
-    private static final int BUTTON_DEFAULT_MODE = 5;
 
     public GuiSettingsGeneral()
     {
@@ -45,23 +44,18 @@ public class GuiSettingsGeneral extends GuiSettingsBase
         buttonList.add(new GuiButtonBetter(BUTTON_IMMEDIATELY_SHOW_POPUP, column1, row2, bSize, 20, "Immediately Show Popup"));
         buttonList.add(new GuiButtonBetter(BUTTON_ALLOW_SCROLLING_WITH_KEYBOARD, column2, row2, bSize, 20, "Scroll with Keyboard"));
         buttonList.add(new GuiButtonBetter(BUTTON_ALLOW_MODE_SWITCH, column1, row3, bSize, 20, "Allow Switching Modes"));
-        buttonList.add(new GuiButtonBetter(BUTTON_DEFAULT_MODE, column2, row3, bSize, 20, QuickHotbarMod.clientSettings.MODE_SWITCHING_DEFAULT_ROW ? "Default Mode: Row" : "Default Mode: Column"));
 
         buttonList.get(BUTTON_ANNOUNCE_MOD).setHoveringText(width / 2, 5, "Should we announce in chat that mod has<br>been loaded while joining a server.", 0xffffff);
         buttonList.get(BUTTON_REVERSE_SCROLLING).setHoveringText(width / 2, 5, "Should the mousewheel scrolling<br>direction be reversed.", 0xffffff);
         buttonList.get(BUTTON_IMMEDIATELY_SHOW_POPUP).setHoveringText(width / 2, 5, "If enabled, hover popup menu will be<br>immediately shown when pressing the<br>scrolling key.", 0xffffff);
         buttonList.get(BUTTON_ALLOW_SCROLLING_WITH_KEYBOARD).setHoveringText(width / 2, 5, "Should you be able to scroll<br>between inventory rows with<br>keyboard keys.", 0xffffff);
         buttonList.get(BUTTON_ALLOW_MODE_SWITCH).setHoveringText(width / 2, 5, "Should you be able to switch between<br>row and column switching.", 0xffffff);
-        buttonList.get(BUTTON_DEFAULT_MODE).setHoveringText(width / 2, 5, "Default mode (row or column switching)<br>when joining a server.", 0xffffff);
 
         for (GuiButtonBetter but : buttonList)
         {
-            if (but.id != BUTTON_DEFAULT_MODE)
-            {
-                but.buttonTextureFile = new ResourceLocation(QuickHotbarModInfo.MODID, "gui/buttonDisabled.png");
-                but.alignToLeft = true;
-                but.leftPadding = 20;
-            }
+            but.buttonTextureFile = new ResourceLocation(QuickHotbarModInfo.MODID, "gui/buttonDisabled.png");
+            but.alignToLeft = true;
+            but.leftPadding = 20;
         }
     }
 
@@ -90,19 +84,6 @@ public class GuiSettingsGeneral extends GuiSettingsBase
         else if (button.id == BUTTON_ALLOW_MODE_SWITCH)
         {
             clientSettings.ALLOW_MODE_SWITCHING = !clientSettings.ALLOW_MODE_SWITCHING;
-        }
-        else if (button.id == BUTTON_DEFAULT_MODE)
-        {
-            if (clientSettings.MODE_SWITCHING_DEFAULT_ROW)
-            {
-                clientSettings.MODE_SWITCHING_DEFAULT_ROW = false;
-                buttonList.get(BUTTON_DEFAULT_MODE).setText("Default Mode: Column");
-            }
-            else
-            {
-                clientSettings.MODE_SWITCHING_DEFAULT_ROW = true;
-                buttonList.get(BUTTON_DEFAULT_MODE).setText("Default Mode: Row");
-            }
         }
 
         clientSettings.saveSettings();
