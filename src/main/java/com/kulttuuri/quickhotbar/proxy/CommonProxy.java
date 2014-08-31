@@ -2,7 +2,6 @@ package com.kulttuuri.quickhotbar.proxy;
 
 import com.kulttuuri.quickhotbar.NetworkConnectionHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.relauncher.Side;
 
 public class CommonProxy implements IProxy
 {

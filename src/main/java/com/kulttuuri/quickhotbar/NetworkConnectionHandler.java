@@ -64,7 +64,6 @@ public class NetworkConnectionHandler implements IConnectionHandler
 	{
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
         {
-            //System.out.println("!!!!! Connection closed!");
             QuickHotbarMod.clientSettings.handleInventorySwitchInServer = false;
         }
 	}
@@ -75,9 +74,6 @@ public class NetworkConnectionHandler implements IConnectionHandler
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
         {
             announceModWelcomeMessage();
-            
-            if (QuickHotbarMod.clientSettings.MODE_SWITCHING_DEFAULT_ROW) QuickHotbarEventHandler.currentSwitchMode = QuickHotbarEventHandler.ENUM_CURRENT_SWITCH_MODE_ROW;
-            else QuickHotbarEventHandler.currentSwitchMode = QuickHotbarEventHandler.ENUM_CURRENT_SWITCH_MODE_COLUMN;
         }
 	}
 	
@@ -86,16 +82,21 @@ public class NetworkConnectionHandler implements IConnectionHandler
 		SettingsClient settings = QuickHotbarMod.clientSettings;
 		if (settings.ANNOUNCE_MOD_LOADED)
 		{
-			String keyNameScrolling = Keyboard.getKeyName(settings.SCROLLING_KEY).equals("LCONTROL") ? "left ctrl" : Keyboard.getKeyName(settings.SCROLLING_KEY).toLowerCase();
-			String keyNameUp = Keyboard.getKeyName(settings.SCROLLING_KEY_UP);
-			String keyNameDown = Keyboard.getKeyName(settings.SCROLLING_KEY_DOWN);
+            String keyNameScrolling = Keyboard.getKeyName(settings.SCROLLING_KEY).equals("LCONTROL") ? "left ctrl" : Keyboard.getKeyName(settings.SCROLLING_KEY).toLowerCase();
+            String keyNameUp = Keyboard.getKeyName(settings.SCROLLING_KEY_UP);
+            String keyNameDown = Keyboard.getKeyName(settings.SCROLLING_KEY_DOWN);
             String keyNameOpenmenu = Keyboard.getKeyName(settings.KEY_OPEN_MOD_SETTINGS_MENU);
-			String orText = settings.ALLOW_SCROLLING_WITH_KEYBOARD == true ? " (or keys " + keyNameUp.toLowerCase() + " & " + keyNameDown.toLowerCase() + ")" : "";
-			String msg = "Quick Hotbar " + QuickHotbarModInfo.VERSION + " loaded. ";
-			msg = msg + "Hold down " + keyNameScrolling + " and use mouse wheel" + orText + " to scroll between inventory rows.";
-			Minecraft.getMinecraft().thePlayer.addChatMessage(msg);
+            String keyNameSwitchMode = Keyboard.getKeyName(settings.SCROLLING_KEY_SWITCH_MODE);
 
-            Minecraft.getMinecraft().thePlayer.addChatMessage(" " + keyNameScrolling + " and " + keyNameOpenmenu + " to view mod settings.");
+            String orText = settings.ALLOW_SCROLLING_WITH_KEYBOARD ? " (or " + keyNameUp.toLowerCase() + " & " + keyNameDown.toLowerCase() + ")" : "";
+            String switchModeText = settings.ALLOW_MODE_SWITCHING ? keyNameScrolling + " + " + keyNameSwitchMode + " to switch mode. " : "";
+            String openMenuText = settings.ENABLE_SETTING_MENU ? keyNameScrolling + " + " + keyNameOpenmenu + " to view mod settings." : "";
+
+            String msg = "Quick Hotbar " + QuickHotbarModInfo.VERSION + " loaded. ";
+            msg = msg + keyNameScrolling + " + mouse wheel" + orText + " to scroll. ";
+            msg = msg + switchModeText;
+            msg = msg + openMenuText;
+            Minecraft.getMinecraft().thePlayer.addChatMessage(msg);
 		}
 	}
 }

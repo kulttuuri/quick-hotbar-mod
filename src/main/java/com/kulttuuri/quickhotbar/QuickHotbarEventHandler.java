@@ -1,48 +1,33 @@
 package com.kulttuuri.quickhotbar;
 
-import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.HOTBAR;
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.util.EnumSet;
 
 import com.kulttuuri.quickhotbar.gui.GuiSettingsBase;
-import net.minecraft.block.Block;
-import net.minecraft.network.packet.Packet101CloseWindow;
-import net.minecraft.network.packet.Packet102WindowClick;
-import net.minecraft.network.packet.Packet103SetSlot;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.ForgeSubscribe;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.TickType;
 
 public class QuickHotbarEventHandler implements ITickHandler
 {
 	private static final ResourceLocation WIDGETS = new ResourceLocation("textures/gui/widgets.png");
 	private static final RenderItem itemRenderer = new RenderItem();
-
-    public static final String ENUM_CURRENT_SWITCH_MODE_ROW = "switch_mode_row";
-    public static final String ENUM_CURRENT_SWITCH_MODE_COLUMN = "switch_mode_column";
-    public static String currentSwitchMode = ENUM_CURRENT_SWITCH_MODE_ROW;
 
 	private static boolean isUpKeyDown = false;
 	private static boolean isDownKeyDown = false;
@@ -56,6 +41,8 @@ public class QuickHotbarEventHandler implements ITickHandler
 	@ForgeSubscribe
 	public void handleKeyboardPresses(RenderGameOverlayEvent.Pre event)
 	{
+        if (Minecraft.getMinecraft().currentScreen != null) return;
+
         if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_SWITCH_MODE)) isModeSwitchKeyDown = false;
         if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP)) isUpKeyDown = false;
         if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_DOWN)) isDownKeyDown = false;
@@ -66,15 +53,17 @@ public class QuickHotbarEventHandler implements ITickHandler
                 QuickHotbarMod.clientSettings.ALLOW_MODE_SWITCHING)
         {
             isModeSwitchKeyDown = true;
-            currentSwitchMode = currentSwitchMode.equals(ENUM_CURRENT_SWITCH_MODE_ROW) ? ENUM_CURRENT_SWITCH_MODE_COLUMN : ENUM_CURRENT_SWITCH_MODE_ROW;
+            QuickHotbarMod.clientSettings.setCurrentSwitchMode(!QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW);
 
             String msg = "";
-            if (currentSwitchMode.equals(ENUM_CURRENT_SWITCH_MODE_ROW)) msg = "Switched to row scrolling.";
+            if (QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW) msg = "Switched to row scrolling.";
             else msg = "Switched to column scrolling.";
             Minecraft.getMinecraft().thePlayer.addChatMessage(msg);
         }
 
-        if (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.KEY_OPEN_MOD_SETTINGS_MENU))
+        if (QuickHotbarMod.clientSettings.ENABLE_SETTING_MENU
+            && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY)
+            && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.KEY_OPEN_MOD_SETTINGS_MENU))
         {
             Minecraft.getMinecraft().displayGuiScreen(GuiSettingsBase.currentGuiScreen);
         }
@@ -89,7 +78,7 @@ public class QuickHotbarEventHandler implements ITickHandler
 				try
 				{
 					//Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(1);
-					switchItemRows(true);
+					switchItemRows(true, true);
 				}
 				catch (Exception e)
 				{
@@ -102,7 +91,7 @@ public class QuickHotbarEventHandler implements ITickHandler
 				try
 				{
 					//Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(-1);
-					switchItemRows(false);
+					switchItemRows(false, true);
 				}
 				catch (Exception e)
 				{
@@ -119,6 +108,8 @@ public class QuickHotbarEventHandler implements ITickHandler
 	@ForgeSubscribe
     public void renderChatMessagesAboveInventorySlotsPreview(RenderGameOverlayEvent.Chat event)
     {
+        if (Minecraft.getMinecraft().currentScreen != null) return;
+
         if (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && renderQuickHotbarPreview)
         {
             event.posY -= 60;
@@ -128,6 +119,8 @@ public class QuickHotbarEventHandler implements ITickHandler
 	@ForgeSubscribe
     public void hideInGameGuiElementsWhenPreviewIsOpen(RenderGameOverlayEvent.Pre event)
     {
+        if (Minecraft.getMinecraft().currentScreen != null) return;
+
     	if (renderQuickHotbarPreview && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY))
     	{
 	    	if (event.type == event.type.FOOD || event.type == event.type.HEALTH || event.type == event.type.EXPERIENCE || event.type == event.type.ARMOR)
@@ -225,7 +218,7 @@ public class QuickHotbarEventHandler implements ITickHandler
 		        try
 		        {
 		        	Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(1);
-		        	switchItemRows(false);
+		        	switchItemRows(false, false);
 		        }
 		        catch (Exception e)
 		        {
@@ -238,7 +231,7 @@ public class QuickHotbarEventHandler implements ITickHandler
 		        try
 		        {
 		        	Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(-1);
-		        	switchItemRows(true);
+		        	switchItemRows(true, false);
 		        }
 		        catch (Exception e)
 		        {
@@ -248,10 +241,16 @@ public class QuickHotbarEventHandler implements ITickHandler
 	    }
 	}
 	
-	private void switchItemRows(boolean directionUp) throws Exception
+	private void switchItemRows(boolean directionUp, boolean isScrollingWithKeyboard) throws Exception
 	{
-        directionUp = QuickHotbarMod.clientSettings.REVERSE_MOUSEWHEEL_SCROLLING ? !directionUp : directionUp;
-        boolean changeRow = currentSwitchMode.equals(ENUM_CURRENT_SWITCH_MODE_ROW);
+        boolean reverseScrolling = QuickHotbarMod.clientSettings.REVERSE_MOUSEWHEEL_SCROLLING;
+        // Direction can only be reversed with mouse scrolling
+        if (!isScrollingWithKeyboard)
+        {
+            directionUp = reverseScrolling ? !directionUp : directionUp;
+        }
+
+        boolean changeRow = QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW;
 
 		renderQuickHotbarPreview = true;
 
@@ -259,11 +258,9 @@ public class QuickHotbarEventHandler implements ITickHandler
         if (QuickHotbarMod.clientSettings.handleInventorySwitchInServer)
         {
             handleRowSwitchInServer(directionUp, changeRow);
-            //System.out.println("Handling row switch in server.");
             return;
         }
 
-        //System.out.println("Handling row switch in client.");
         if (!directionUp)
         {
             if (changeRow)
@@ -274,9 +271,7 @@ public class QuickHotbarEventHandler implements ITickHandler
             }
             else
             {
-                int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
-                currentSlot = currentSlot + 1;
-                if (currentSlot >= 9) currentSlot = 0;
+                int currentSlot = getCurrentSlot(directionUp, reverseScrolling, isScrollingWithKeyboard);
                 switchItemsInSlots(3 * ITEMS_IN_ROW + currentSlot, 2 * ITEMS_IN_ROW + currentSlot);
                 switchItemsInSlots(2 * ITEMS_IN_ROW + currentSlot, 1 * ITEMS_IN_ROW + currentSlot);
                 switchItemsInSlots(1 * ITEMS_IN_ROW + currentSlot, 0 * ITEMS_IN_ROW + currentSlot);
@@ -292,15 +287,32 @@ public class QuickHotbarEventHandler implements ITickHandler
             }
             else
             {
-                int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
-                currentSlot = currentSlot - 1;
-                if (currentSlot < 0) currentSlot = 8;
+                int currentSlot = getCurrentSlot(directionUp, reverseScrolling, isScrollingWithKeyboard);
                 switchItemsInSlots(0 * ITEMS_IN_ROW + currentSlot, 1 * ITEMS_IN_ROW + currentSlot);
                 switchItemsInSlots(1 * ITEMS_IN_ROW + currentSlot, 2 * ITEMS_IN_ROW + currentSlot);
                 switchItemsInSlots(2 * ITEMS_IN_ROW + currentSlot, 3 * ITEMS_IN_ROW + currentSlot);
             }
         }
 	}
+
+    private int getCurrentSlot(boolean directionUp, boolean reverseScrolling, boolean isScrollingWithKeyboard)
+    {
+        if ((!reverseScrolling && !directionUp) || (reverseScrolling && directionUp))
+        {
+            int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
+            if (!isScrollingWithKeyboard) currentSlot = currentSlot + 1;
+            if (currentSlot >= 9) currentSlot = 0;
+            return currentSlot;
+        }
+        else
+        {
+            int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
+            if (!isScrollingWithKeyboard) currentSlot = currentSlot - 1;
+            if (currentSlot < 0) currentSlot = 8;
+            return currentSlot;
+
+        }
+    }
 
     private void handleRowSwitchInServer(boolean directionUp, boolean changeRow)
     {
