@@ -2,9 +2,12 @@ package com.kulttuuri.quickhotbar.gui.components;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -62,8 +65,8 @@ public class ToolTipHelper
 				// Remove colour tags so they don't affect line length
 				parseList[o] = parseList[o].replaceAll("<red>", ""); parseList[o] = parseList[o].replaceAll("<white>", ""); parseList[o] = parseList[o].replaceAll("<green>", "");
 				
-				if (Minecraft.getMinecraft().fontRenderer.getStringWidth(parseList[o]) > maxLength)
-					maxLength = Minecraft.getMinecraft().fontRenderer.getStringWidth(parseList[o]);
+				if (Minecraft.getMinecraft().fontRendererObj.getStringWidth(parseList[o]) > maxLength)
+					maxLength = Minecraft.getMinecraft().fontRendererObj.getStringWidth(parseList[o]);
 			}
 			// Draw each line
 			for (int i = 0; i < list.length; i++)
@@ -127,7 +130,7 @@ public class ToolTipHelper
         text = text.replace("<white>", "\\247f");
         text = text.replace("<green>", "\\2472");
         // Draws the string
-        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(text, var5, var6, - 1);
+        Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(text, var5, var6, - 1);
 	}
 
     /**
@@ -137,6 +140,8 @@ public class ToolTipHelper
      */
     private static void drawTooltipGradientRect(GuiScreen gui, int par1, int par2, int par3, int par4, int par5, int par6)
     {
+        // TODO: Fix this. Tooltips do not draw background at the moment at all.
+        /*ScaledResolution res = new ScaledResolution(Minecraft.getMinecraft(), Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight);
         float var7 = (float)(par5 >> 24 & 255) / 255.0F;
         float var8 = (float)(par5 >> 16 & 255) / 255.0F;
         float var9 = (float)(par5 >> 8 & 255) / 255.0F;
@@ -150,8 +155,8 @@ public class ToolTipHelper
         GL11.glDisable(GL11.GL_ALPHA_TEST);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glShadeModel(GL11.GL_SMOOTH);
-        Tessellator var15 = Tessellator.instance;
-        var15.startDrawingQuads();
+        Tessellator var15 = Tessellator.getInstance();
+        /*var15.startDrawingQuads();
         // Last parameter is the alpha value
         var15.setColorRGBA_F(var8, var9, var10, var7-0.3000000F);
         var15.addVertex((double)par3, (double)par2, 100);
@@ -159,11 +164,17 @@ public class ToolTipHelper
         // Last parameter is the alpha value
         var15.setColorRGBA_F(var12, var13, var14, var11-0.3000000F);
         var15.addVertex((double)par1, (double)par4, 100);
-        var15.addVertex((double)par3, (double)par4, 100);
+        var15.addVertex((double)par3, (double)par4, 100);*/
+        /*WorldRenderer worldrenderer = var15.getWorldRenderer();
+        worldrenderer.startDrawingQuads();
+        worldrenderer.addVertexWithUV(0.0D, (double)res.getScaledHeight(), -90.0D, 0.0D, 1.0D);
+        worldrenderer.addVertexWithUV((double)res.getScaledWidth(), (double)res.getScaledHeight(), -90.0D, 1.0D, 1.0D);
+        worldrenderer.addVertexWithUV((double)res.getScaledWidth(), 0.0D, -90.0D, 1.0D, 0.0D);
+        worldrenderer.addVertexWithUV(0.0D, 0.0D, -90.0D, 0.0D, 0.0D);
         var15.draw();
         GL11.glShadeModel(GL11.GL_FLAT);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);*/
     }
 }

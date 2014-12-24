@@ -5,6 +5,8 @@ import com.kulttuuri.quickhotbar.gui.components.GuiButtonBetter;
 import com.kulttuuri.quickhotbar.settings.SettingsClient;
 import net.minecraft.client.gui.GuiButton;
 
+import java.io.IOException;
+
 /**
  * GUI for information screen.
  * @author Aleksi Postari / Kulttuuri
@@ -30,7 +32,14 @@ public class GuiSettingsInformation extends GuiSettingsBase
     @Override
     protected void actionPerformed(GuiButton guibutton)
     {
-        super.actionPerformed(guibutton);
+        try
+        {
+            super.actionPerformed(guibutton);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
 
         if (guibutton.id == BUTTON_MOD_NETWORK_POST_THREAD)
         {

@@ -45,13 +45,12 @@ public class GuiSettingsKeyBindings extends GuiSettingsBase
 
         int fieldWidth = 100;
         int fieldHeight = 15;
+        textfieldBindings.add(TEXTFIELD_MODIFIER, new GuiTextField(0, Minecraft.getMinecraft().fontRendererObj, width / 2 - 159, height / 2 - 34, fieldWidth, fieldHeight));
+        textfieldBindings.add(TEXTFIELD_SWITCH_MODE, new GuiTextField(0, Minecraft.getMinecraft().fontRendererObj, width / 2 - 159, height / 2 + 15, fieldWidth, fieldHeight));
+        textfieldBindings.add(TEXTFIELD_OPEN_MENU, new GuiTextField(0, Minecraft.getMinecraft().fontRendererObj, width / 2 - 159, height / 2 + 45, fieldWidth, fieldHeight));
 
-        textfieldBindings.add(TEXTFIELD_MODIFIER, new GuiTextField(Minecraft.getMinecraft().fontRenderer, width / 2 - 159, height / 2 - 34, fieldWidth, fieldHeight));
-        textfieldBindings.add(TEXTFIELD_SWITCH_MODE, new GuiTextField(Minecraft.getMinecraft().fontRenderer, width / 2 - 159, height / 2 + 15, fieldWidth, fieldHeight));
-        textfieldBindings.add(TEXTFIELD_OPEN_MENU, new GuiTextField(Minecraft.getMinecraft().fontRenderer, width / 2 - 159, height / 2 + 45, fieldWidth, fieldHeight));
-
-        textfieldBindings.add(TEXTFIELD_SCROLL_UP, new GuiTextField(Minecraft.getMinecraft().fontRenderer, width / 2 - 30, height / 2 + 15, fieldWidth, fieldHeight));
-        textfieldBindings.add(TEXTFIELD_SCROLL_DOWN, new GuiTextField(Minecraft.getMinecraft().fontRenderer, width / 2 - 30, height / 2 + 45, fieldWidth, fieldHeight));
+        textfieldBindings.add(TEXTFIELD_SCROLL_UP, new GuiTextField(0, Minecraft.getMinecraft().fontRendererObj, width / 2 - 30, height / 2 + 15, fieldWidth, fieldHeight));
+        textfieldBindings.add(TEXTFIELD_SCROLL_DOWN, new GuiTextField(0, Minecraft.getMinecraft().fontRendererObj, width / 2 - 30, height / 2 + 45, fieldWidth, fieldHeight));
 
         updateValues();
     }

@@ -1,7 +1,7 @@
 package com.kulttuuri.quickhotbar;
 
 import com.kulttuuri.quickhotbar.gui.GuiSettingsBase;
-import cpw.mods.fml.common.network.FMLNetworkEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -20,14 +20,15 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
+
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 
 public class QuickHotbarEventHandler
 {
 	private static final ResourceLocation WIDGETS = new ResourceLocation("textures/gui/widgets.png");
-	private static final RenderItem itemRenderer = new RenderItem();
+	private static final RenderItem itemRenderer = Minecraft.getMinecraft().getRenderItem();
 
 	private static boolean announceWelcomeMessage = false;
 	public static boolean renderQuickHotbarPreview = false;
@@ -259,14 +260,16 @@ public class QuickHotbarEventHandler
                 GL11.glTranslatef((float)(-(par2 + 8)), (float)(-(par3 + 12)), 0.0F);
             }
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5F);
-            itemRenderer.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.getTextureManager(), itemstack, par2, par3+1);
+            //itemRenderer.renderItemAndEffectIntoGUI(mc.fontRendererObj, mc.getTextureManager(), itemstack, par2, par3+1);
+            itemRenderer.renderItemAndEffectIntoGUI(itemstack, par2, par3+1);
 
             if (f1 > 0.0F)
             {
                 GL11.glPopMatrix();
             }
 
-            itemRenderer.renderItemOverlayIntoGUI(mc.fontRenderer, mc.getTextureManager(), itemstack, par2, par3+1);
+            //itemRenderer.renderItemOverlayIntoGUI(mc.fontRendererObj, mc.getTextureManager(), itemstack, par2, par3+1);
+            itemRenderer.renderItemOverlayIntoGUI(mc.fontRendererObj, itemstack, par2, par3+1, null);
         }
     }
 	

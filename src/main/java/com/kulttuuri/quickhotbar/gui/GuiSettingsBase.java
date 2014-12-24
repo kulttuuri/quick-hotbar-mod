@@ -1,5 +1,6 @@
 package com.kulttuuri.quickhotbar.gui;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,7 +104,14 @@ public abstract class GuiSettingsBase extends GuiScreen
                 GuiButtonBetter guibutton = buttonList.get(l);
                 if(guibutton.mousePressed(mc, i, j))
                 {
-                    actionPerformed(guibutton);
+                    try
+                    {
+                        actionPerformed(guibutton);
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -114,7 +122,7 @@ public abstract class GuiSettingsBase extends GuiScreen
     public void setWorldAndResolution(Minecraft minecraft, int i, int j)
     {
         mc = minecraft;
-        fontRenderer = minecraft.fontRenderer;
+        fontRenderer = minecraft.fontRendererObj;
         width = i;
         height = j;
         buttonList.clear();
