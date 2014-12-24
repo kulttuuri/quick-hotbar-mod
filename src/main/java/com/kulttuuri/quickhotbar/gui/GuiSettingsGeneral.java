@@ -8,6 +8,8 @@ import com.kulttuuri.quickhotbar.settings.SettingsClient;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
 
+import java.io.IOException;
+
 /**
  * GUI for information screen.
  * @author Aleksi Postari / Kulttuuri
@@ -61,7 +63,14 @@ public class GuiSettingsGeneral extends GuiSettingsBase
 
     @Override protected void actionPerformed(GuiButton button)
     {
-        super.actionPerformed(button);
+        try
+        {
+            super.actionPerformed(button);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
 
         SettingsClient clientSettings = QuickHotbarMod.clientSettings;
 

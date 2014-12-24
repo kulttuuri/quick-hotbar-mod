@@ -73,7 +73,7 @@ public class GuiButtonBetter extends GuiButton
         {
             return;
         }
-        FontRenderer fontrenderer = minecraft.fontRenderer;
+        FontRenderer fontrenderer = minecraft.fontRendererObj;
         //GL11.glBindTexture(3553 /*GL_TEXTURE_2D*/, minecraft.renderEngine.getTexture(buttonTextureFile));
         minecraft.renderEngine.bindTexture(buttonTextureFile);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, this.drawTransparent ? 0.5f : 1.0f);
@@ -121,7 +121,7 @@ public class GuiButtonBetter extends GuiButton
         RenderHelper.disableStandardItemLighting();
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
-        int var4 = minecraft.fontRenderer.getStringWidth(par1Str);
+        int var4 = minecraft.fontRendererObj.getStringWidth(par1Str);
         int var5 = par2 + 12;
         int var6 = par3 - 12;
         byte var8 = 8;
@@ -139,7 +139,7 @@ public class GuiButtonBetter extends GuiButton
         this.drawGradientRect(var5 + var4 + 2, var6 - 3 + 1, var5 + var4 + 3, var6 + var8 + 3 - 1, var10, var11);
         this.drawGradientRect(var5 - 3, var6 - 3, var5 + var4 + 3, var6 - 3 + 1, var10, var10);
         this.drawGradientRect(var5 - 3, var6 + var8 + 2, var5 + var4 + 3, var6 + var8 + 3, var11, var11);
-        minecraft.fontRenderer.drawString(par1Str, var5, var6, -1);
+        minecraft.fontRendererObj.drawString(par1Str, var5, var6, -1);
         this.zLevel = 0.0F;
         //itemRenderer.zLevel = 0.0F;
     }

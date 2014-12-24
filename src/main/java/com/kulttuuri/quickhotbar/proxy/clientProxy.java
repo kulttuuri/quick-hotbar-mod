@@ -5,7 +5,7 @@ import com.kulttuuri.quickhotbar.gui.GuiSettingsInformation;
 
 import com.kulttuuri.quickhotbar.QuickHotbarEventHandler;
 
-import cpw.mods.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import net.minecraftforge.common.MinecraftForge;
 

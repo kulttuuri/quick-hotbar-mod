@@ -4,8 +4,8 @@ import com.kulttuuri.quickhotbar.QuickHotbarEventHandlerServer;
 import com.kulttuuri.quickhotbar.packets.PacketAnnounceServerAssist;
 import com.kulttuuri.quickhotbar.packets.PacketChangeCurrentRow;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.common.MinecraftForge;
 
 public class CommonProxy implements IProxy
