@@ -3,7 +3,7 @@
   "modid": "quickhotbar",
   "name": "Quick Hotbar",
   "description": "While in game hold ctrl and and use the mousewheel to browse through your inventory rows.",
-  "version": "1.03",
+  "version": "1.04",
   "mcversion": "1.8",
   "url": "",
   "updateUrl": "",
