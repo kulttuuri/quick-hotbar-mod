@@ -100,7 +100,7 @@ public class QuickHotbarEventHandler
     {
         if (Minecraft.getMinecraft().currentScreen != null) return;
 
-        if (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && renderQuickHotbarPreview)
+        if ((whichNumberKeyIsDown() != 0 || Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY)) && renderQuickHotbarPreview)
         {
             event.posY -= 60;
         }
@@ -204,7 +204,7 @@ public class QuickHotbarEventHandler
     @SubscribeEvent
     public void hideInGameGuiElementsWhenPreviewIsOpen(RenderGameOverlayEvent.Pre event)
     {
-    	if (renderQuickHotbarPreview && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY))
+    	if (renderQuickHotbarPreview && (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) || whichNumberKeyIsDown() != 0))
     	{
 	    	if (event.type == event.type.FOOD || event.type == event.type.HEALTH || event.type == event.type.EXPERIENCE || event.type == event.type.ARMOR)
 	    	{
