@@ -9,16 +9,17 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
 
 /**
- * GUI for information screen.
+ * GUI for settings screen.
  * @author Aleksi Postari / Kulttuuri
  */
 public class GuiSettingsGeneral extends GuiSettingsBase
 {
     private static final int BUTTON_ANNOUNCE_MOD = 0;
-    private static final int BUTTON_REVERSE_SCROLLING = 1;
-    private static final int BUTTON_IMMEDIATELY_SHOW_POPUP = 2;
+    private static final int BUTTON_IMMEDIATELY_SHOW_POPUP = 1;
+    private static final int BUTTON_ALLOW_NUMBER_COLUMN_SWITCH = 2;
     private static final int BUTTON_ALLOW_SCROLLING_WITH_KEYBOARD = 3;
     private static final int BUTTON_ALLOW_MODE_SWITCH = 4;
+    private static final int BUTTON_REVERSE_SCROLLING = 5;
 
     public GuiSettingsGeneral()
     {
@@ -40,16 +41,20 @@ public class GuiSettingsGeneral extends GuiSettingsBase
         int column2 = width / 2 + 5;
 
         buttonList.add(new GuiButtonBetter(BUTTON_ANNOUNCE_MOD, column1, row1, bSize, 20, "Announce Mod Loaded"));
-        buttonList.add(new GuiButtonBetter(BUTTON_REVERSE_SCROLLING, column2, row1, bSize, 20, "Reverse Scrolling"));
-        buttonList.add(new GuiButtonBetter(BUTTON_IMMEDIATELY_SHOW_POPUP, column1, row2, bSize, 20, "Immediately Show Popup"));
+        buttonList.add(new GuiButtonBetter(BUTTON_IMMEDIATELY_SHOW_POPUP, column2, row1, bSize, 20, "Immediately Show Popup"));
+
+        buttonList.add(new GuiButtonBetter(BUTTON_ALLOW_NUMBER_COLUMN_SWITCH, column1, row2, bSize, 20, "Scroll with Numbers"));
         buttonList.add(new GuiButtonBetter(BUTTON_ALLOW_SCROLLING_WITH_KEYBOARD, column2, row2, bSize, 20, "Scroll with Keyboard"));
+
         buttonList.add(new GuiButtonBetter(BUTTON_ALLOW_MODE_SWITCH, column1, row3, bSize, 20, "Allow Switching Modes"));
+        buttonList.add(new GuiButtonBetter(BUTTON_REVERSE_SCROLLING, column2, row3, bSize, 20, "Reverse Scrolling"));
 
         buttonList.get(BUTTON_ANNOUNCE_MOD).setHoveringText(width / 2, 5, "Should we announce in chat that mod has<br>been loaded while joining a server.", 0xffffff);
-        buttonList.get(BUTTON_REVERSE_SCROLLING).setHoveringText(width / 2, 5, "Should the mousewheel scrolling<br>direction be reversed.", 0xffffff);
         buttonList.get(BUTTON_IMMEDIATELY_SHOW_POPUP).setHoveringText(width / 2, 5, "If enabled, hover popup menu will be<br>immediately shown when pressing the<br>scrolling key.", 0xffffff);
+        buttonList.get(BUTTON_ALLOW_NUMBER_COLUMN_SWITCH).setHoveringText(width / 2, 5, "Should you able to switch<br>columns by holding down<br>number and scrolling.", 0xffffff);
         buttonList.get(BUTTON_ALLOW_SCROLLING_WITH_KEYBOARD).setHoveringText(width / 2, 5, "Should you be able to scroll<br>between inventory rows with<br>keyboard keys.", 0xffffff);
         buttonList.get(BUTTON_ALLOW_MODE_SWITCH).setHoveringText(width / 2, 5, "Should you be able to switch between<br>row and column switching.", 0xffffff);
+        buttonList.get(BUTTON_REVERSE_SCROLLING).setHoveringText(width / 2, 5, "Should the mousewheel scrolling<br>direction be reversed.", 0xffffff);
 
         for (GuiButtonBetter but : buttonList)
         {
@@ -68,6 +73,10 @@ public class GuiSettingsGeneral extends GuiSettingsBase
         if (button.id == BUTTON_ANNOUNCE_MOD)
         {
             clientSettings.ANNOUNCE_MOD_LOADED = !clientSettings.ANNOUNCE_MOD_LOADED;
+        }
+        else if (button.id == BUTTON_ALLOW_NUMBER_COLUMN_SWITCH)
+        {
+            clientSettings.ENABLE_NUMBER_SCROLLING = !clientSettings.ENABLE_NUMBER_SCROLLING;
         }
         else if (button.id == BUTTON_REVERSE_SCROLLING)
         {
@@ -110,6 +119,9 @@ public class GuiSettingsGeneral extends GuiSettingsBase
         if (clientSettings.ALLOW_MODE_SWITCHING) setButtonState(buttonList.get(BUTTON_ALLOW_MODE_SWITCH), true);
         else setButtonState(buttonList.get(BUTTON_ALLOW_MODE_SWITCH), false);
 
+        if (clientSettings.ENABLE_NUMBER_SCROLLING) setButtonState(buttonList.get(BUTTON_ALLOW_NUMBER_COLUMN_SWITCH), true);
+        else setButtonState(buttonList.get(BUTTON_ALLOW_NUMBER_COLUMN_SWITCH), false);
+        
         ToolTipHelper.renderToolTipAndClear(this);
     }
 }

@@ -32,11 +32,28 @@ public class QuickHotbarEventHandler implements ITickHandler
 	private static boolean isUpKeyDown = false;
 	private static boolean isDownKeyDown = false;
     private static boolean isModeSwitchKeyDown = false;
+    private static boolean isNumberKeyDown = false;
 	
 	/** Should we render other item slots in the ingame gui. */
 	public static boolean renderQuickHotbarPreview = false;
 
     private static final int ITEMS_IN_ROW = 9;
+
+    private int whichNumberKeyIsDown()
+    {
+        if (!QuickHotbarMod.clientSettings.ENABLE_NUMBER_SCROLLING) return 0;
+
+        if (Keyboard.isKeyDown(2)) return 1;
+        else if (Keyboard.isKeyDown(3)) return 2;
+        else if (Keyboard.isKeyDown(4)) return 3;
+        else if (Keyboard.isKeyDown(5)) return 4;
+        else if (Keyboard.isKeyDown(6)) return 5;
+        else if (Keyboard.isKeyDown(7)) return 6;
+        else if (Keyboard.isKeyDown(8)) return 7;
+        else if (Keyboard.isKeyDown(9)) return 8;
+        else if (Keyboard.isKeyDown(10)) return 9;
+        else return 0;
+    }
 
 	@ForgeSubscribe
 	public void handleKeyboardPresses(RenderGameOverlayEvent.Pre event)
@@ -46,6 +63,7 @@ public class QuickHotbarEventHandler implements ITickHandler
         if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_SWITCH_MODE)) isModeSwitchKeyDown = false;
         if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP)) isUpKeyDown = false;
         if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_DOWN)) isDownKeyDown = false;
+        if (whichNumberKeyIsDown() == 0) isNumberKeyDown = false;
 
         if (!isModeSwitchKeyDown &&
                 Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_SWITCH_MODE) &&
@@ -72,13 +90,44 @@ public class QuickHotbarEventHandler implements ITickHandler
 
 		if (QuickHotbarMod.clientSettings.ALLOW_SCROLLING_WITH_KEYBOARD)
 		{
+            // Number key down with arrow up key
+            if (!isUpKeyDown && whichNumberKeyIsDown() != 0 && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP))
+            {
+                isNumberKeyDown = true;
+                isUpKeyDown = true;
+                renderQuickHotbarPreview = true;
+                try
+                {
+                    switchItemRows(true, true, false);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            // Number key down with arrow down key
+            if (!isDownKeyDown && whichNumberKeyIsDown() != 0 && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_DOWN))
+            {
+                isNumberKeyDown = true;
+                isDownKeyDown = true;
+                renderQuickHotbarPreview = true;
+                try
+                {
+                    switchItemRows(false, true, false);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+
 			if (!isUpKeyDown && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP))
 			{
 				isUpKeyDown = true;
 				try
 				{
 					//Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(1);
-					switchItemRows(true, true);
+                    switchItemRows(true, true, QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW);
 				}
 				catch (Exception e)
 				{
@@ -91,7 +140,7 @@ public class QuickHotbarEventHandler implements ITickHandler
 				try
 				{
 					//Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(-1);
-					switchItemRows(false, true);
+                    switchItemRows(false, true, QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW);
 				}
 				catch (Exception e)
 				{
@@ -110,7 +159,7 @@ public class QuickHotbarEventHandler implements ITickHandler
     {
         if (Minecraft.getMinecraft().currentScreen != null) return;
 
-        if (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && renderQuickHotbarPreview)
+        if ((whichNumberKeyIsDown() != 0 || Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY)) && renderQuickHotbarPreview)
         {
             event.posY -= 60;
         }
@@ -121,7 +170,7 @@ public class QuickHotbarEventHandler implements ITickHandler
     {
         if (Minecraft.getMinecraft().currentScreen != null) return;
 
-    	if (renderQuickHotbarPreview && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY))
+        if (renderQuickHotbarPreview && (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) || whichNumberKeyIsDown() != 0))
     	{
 	    	if (event.type == event.type.FOOD || event.type == event.type.HEALTH || event.type == event.type.EXPERIENCE || event.type == event.type.ARMOR)
 	    	{
@@ -211,14 +260,14 @@ public class QuickHotbarEventHandler implements ITickHandler
 	public void handleMouseScroll(MouseEvent event)
 	{
 	    int dWheel = event.dwheel;
-	    if (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY))
+        if (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) || whichNumberKeyIsDown() != 0)
 	    {
 		    if (dWheel < 0)
 		    {
 		        try
 		        {
 		        	Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(1);
-		        	switchItemRows(false, false);
+                    switchItemRows(false, false, whichNumberKeyIsDown() != 0 ? false : QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW);
 		        }
 		        catch (Exception e)
 		        {
@@ -231,7 +280,7 @@ public class QuickHotbarEventHandler implements ITickHandler
 		        try
 		        {
 		        	Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(-1);
-		        	switchItemRows(true, false);
+                    switchItemRows(true, false, whichNumberKeyIsDown() != 0 ? false : QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW);
 		        }
 		        catch (Exception e)
 		        {
@@ -240,8 +289,8 @@ public class QuickHotbarEventHandler implements ITickHandler
 		    }
 	    }
 	}
-	
-	private void switchItemRows(boolean directionUp, boolean isScrollingWithKeyboard) throws Exception
+
+    private void switchItemRows(boolean directionUp, boolean isScrollingWithKeyboard, boolean changeRow) throws Exception
 	{
         boolean reverseScrolling = QuickHotbarMod.clientSettings.REVERSE_MOUSEWHEEL_SCROLLING;
         // Direction can only be reversed with mouse scrolling
@@ -250,7 +299,7 @@ public class QuickHotbarEventHandler implements ITickHandler
             directionUp = reverseScrolling ? !directionUp : directionUp;
         }
 
-        boolean changeRow = QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW;
+        //boolean changeRow = QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW;
 
 		renderQuickHotbarPreview = true;
 
@@ -372,7 +421,7 @@ public class QuickHotbarEventHandler implements ITickHandler
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData)
 	{
-		if ((renderQuickHotbarPreview) && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY))
+        if (renderQuickHotbarPreview && (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) || whichNumberKeyIsDown() != 0))
 		{
 			if (Minecraft.getMinecraft().ingameGUI == null || !Minecraft.getMinecraft().inGameHasFocus) return;
 			
@@ -386,7 +435,7 @@ public class QuickHotbarEventHandler implements ITickHandler
 			renderHotbar(mc.ingameGUI, 2, 63, width, height, 1);
 			renderHotbar(mc.ingameGUI, 1, 83, width, height, 1);
 		}
-		else if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && renderQuickHotbarPreview)
+        else if ((!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && !isNumberKeyDown) && renderQuickHotbarPreview)
 		{
 			renderQuickHotbarPreview = false;
 			// Enable back rendering of item name user changed slot into
