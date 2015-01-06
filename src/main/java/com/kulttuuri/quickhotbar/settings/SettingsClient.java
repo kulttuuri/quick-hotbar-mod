@@ -33,6 +33,8 @@ public class SettingsClient extends SettingsGlobal
 	public boolean ANNOUNCE_MOD_LOADED = true;
     /** Is user able to open mod settings menu? */
     public boolean ENABLE_SETTING_MENU = true;
+    /** Is user able to hold down numeric key and scroll that column immediately? */
+    public boolean ENABLE_NUMBER_SCROLLING = true;
 
     /** When connecting to a server, server syncs if it has mod installed and if functionality should be handled serverside. */
     public static boolean handleInventorySwitchInServer = false;
@@ -52,6 +54,7 @@ public class SettingsClient extends SettingsGlobal
     private Property allowKeyboardScroll;
     private Property scrollKeyUp;
     private Property scrollKeyDown;
+    private Property enableNumberScrolling;
 
 	@Override
 	public void loadSettingsFromFile(File configurationFile)
@@ -74,6 +77,7 @@ public class SettingsClient extends SettingsGlobal
 		allowKeyboardScroll = config.get("general", "allow_scrolling_with_keyboard_keys", true);
 		scrollKeyUp = config.get("keybindings", "keyboard_scroll_key_up", "KEY_UP");
 		scrollKeyDown = config.get("keybindings", "keyboard_scroll_key_down", "KEY_DOWN");
+        enableNumberScrolling = config.get("general", "allow_number_scrolling", true);
 
 		// Load settings
 		ANNOUNCE_MOD_LOADED = announceModLoaded.getBoolean(true);
@@ -88,6 +92,7 @@ public class SettingsClient extends SettingsGlobal
 		ALLOW_SCROLLING_WITH_KEYBOARD = allowKeyboardScroll.getBoolean(true);
 		SCROLLING_KEY_UP = loadKeybindingFromFile(scrollKeyUp.getString().trim(), Keyboard.KEY_UP);
 		SCROLLING_KEY_DOWN = loadKeybindingFromFile(scrollKeyDown.getString().trim(), Keyboard.KEY_DOWN);
+        ENABLE_NUMBER_SCROLLING = enableNumberScrolling.getBoolean(true);
 		
 		// Save comments for settings
 		announceModLoaded.comment = "When you join a game, this mod prints out that is has been loaded and it's keybindings. Set to false to disable this behavior. Default: true";
@@ -102,7 +107,8 @@ public class SettingsClient extends SettingsGlobal
         allowKeyboardScroll.comment = "If this is true, user can scroll inventory rows with bind keyboard keys. Default: true";
 		scrollKeyUp.comment = "Keyboard key which can be used to scroll inventory rows up. Default: KEY_UP. Should you wish to change this key, you can find all supported keys from here: http://www.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html";
 		scrollKeyDown.comment = "Keyboard key which can be used to scroll inventory rows down. Default: KEY_DOWN. Should you wish to change this key, you can find all supported keys from here: http://www.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html";
-		
+        enableNumberScrolling.comment = "Should you be able to hold down inventory number slot and scroll that column. Default: true";
+
 		config.save();
 	}
 
@@ -119,6 +125,7 @@ public class SettingsClient extends SettingsGlobal
         allowKeyboardScroll.set(ALLOW_SCROLLING_WITH_KEYBOARD);
         scrollKeyUp.set(Keyboard.getKeyName(SCROLLING_KEY_UP));
         scrollKeyDown.set(Keyboard.getKeyName(SCROLLING_KEY_DOWN));
+        enableNumberScrolling.set(ENABLE_NUMBER_SCROLLING);
 
         config.save();
     }
