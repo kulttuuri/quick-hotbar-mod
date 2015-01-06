@@ -3,13 +3,13 @@
   "modid": "quickhotbar",
   "name": "Quick Hotbar",
   "description": "While in game hold ctrl and and use the mousewheel to browse through your inventory rows.",
-  "version": "1.03",
+  "version": "1.04",
   "mcversion": "1.7.10",
-  "url": "",
+  "url": "www.quickhotbar.com",
   "updateUrl": "",
   "authorList": ["Kulttuuri"],
   "credits": "Kulttuuri",
-  "logoFile": "",
+  "logoFile": "/assets/quickhotbar/gui/quickhotbar_logo.png",
   "screenshots": [],
   "dependencies": []
 }
