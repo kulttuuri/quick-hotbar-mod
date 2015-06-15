@@ -11,7 +11,7 @@ This is a Forge Mod for Minecraft that works with Minecraft versions 1.6.4, 1.7.
 Actual download of this mod which you can use with your Minecraft can be found from [quickhotbar.com](http://www.quickhotbar.com/).
 
 ## More Information
-[quickhotbar.com](http://www.quickhotbar.com/) or [Minecraft Forum Thread](http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/2143847-quick-hotbar-mod)
+[quickhotbar.com](http://www.quickhotbar.com/) or [Minecraft Forum Thread](http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/2143847-quick-hotbar-mod).
 
 ## License
 
