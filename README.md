@@ -13,4 +13,4 @@ Actual download of this mod which you can use with your Minecraft can be found f
 
 ## License
 
-Source code is licensed under LGPL (Lesser General Public License). See file [LICENSE.md](LICENSE.md) for more information.
+Source code is licensed under MIT. See file [LICENSE.md](LICENSE.md) for more information.
