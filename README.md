@@ -14,11 +14,12 @@ Actual download of this mod which you can use with your Minecraft can be found f
 
 To develop this mod further / do your changes, do this:
 
-1.  Switch to branch for which Minecraft version you want to develop for.
-2.  Download Minecraft Forge for that Minecraft version.
-3.  Install Minecraft Forge.
-4.  Move the src/ folder to minecraftforge's src folder.
-5.  Go!
+1.  Fork the project.
+2.  Switch to branch for which Minecraft version you want to develop for.
+3.  Download Minecraft Forge for that Minecraft version.
+4.  Install Minecraft Forge.
+5.  Move the src/ folder to minecraftforge's src folder.
+6.  Go!
 
 ## More Information
 [quickhotbar.com](http://www.quickhotbar.com/) or [Minecraft Forum Thread](http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/2143847-quick-hotbar-mod).
