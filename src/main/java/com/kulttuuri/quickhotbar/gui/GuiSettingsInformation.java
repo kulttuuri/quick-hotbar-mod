@@ -40,7 +40,7 @@ public class GuiSettingsInformation extends GuiSettingsBase
         super.initGui();
 
         buttonList.clear();
-        buttonList.add(new GuiButtonBetter(BUTTON_MOD_NETWORK_POST_THREAD, width / 2, height / 2, 100, 20, "Mod Information"));
+        buttonList.add(new GuiButtonBetter(BUTTON_MOD_NETWORK_POST_THREAD, width / 2, height / 2, 100, 20, TranslationHelper.translateString("quickhotbarmod.gui.information.modinformation")));
     }
 
     @Override
@@ -76,15 +76,15 @@ public class GuiSettingsInformation extends GuiSettingsBase
     {
         super.drawScreen(i, j, f);
 
-        fontRenderer.drawString("Quick Hotbar Mod version " + QuickHotbarModInfo.VERSION, width / 2 - 160, height / 2 - 40, -1);
+        fontRenderer.drawString("Quick Hotbar Mod " + TranslationHelper.translateString("quickhotbarmod.gui.information.modversiontext") + " " + QuickHotbarModInfo.VERSION, width / 2 - 160, height / 2 - 40, -1);
 
         if (SettingsClient.handleInventorySwitchInServer)
         {
-            fontRenderer.drawString("Server has mod installed.", width / 2 - 160, height / 2 - 25, -1);
+            fontRenderer.drawString(TranslationHelper.translateString("quickhotbarmod.gui.information.servermodinstalled"), width / 2 - 160, height / 2 - 25, -1);
         }
         else
         {
-            fontRenderer.drawString("Server does not have mod installed.", width / 2 - 160, height / 2 - 25, -1);
+            fontRenderer.drawString(TranslationHelper.translateString("quickhotbarmod.gui.information.servernomodinstalled"), width / 2 - 160, height / 2 - 25, -1);
         }
     }
 }

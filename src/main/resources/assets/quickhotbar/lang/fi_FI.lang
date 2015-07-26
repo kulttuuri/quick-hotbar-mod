@@ -1,0 +1,43 @@
+# GUI TABS
+quickhotbarmod.gui.tabs.information=Yleistä
+quickhotbarmod.gui.tabs.settings=Asetukset
+quickhotbarmod.gui.tabs.keybindings=Näppäimet
+
+# INFORMATION GUI
+quickhotbarmod.gui.information.modinformation=Tietoa modista
+quickhotbarmod.gui.information.modversiontext=versio
+quickhotbarmod.gui.information.servermodinstalled=Modi on asennettu palvelimelle.
+quickhotbarmod.gui.information.servernomodinstalled=Modia ei ole asennettu palvelimelle.
+
+# GENERAL GUI
+quickhotbarmod.gui.general.announcemodloaded.title=Ilmoita modin lataamisesta
+quickhotbarmod.gui.general.announcemodloaded.tooltip=Ilmoitammeko chatissa että modi on ladattu<br>kun liityt palvelimelle.
+quickhotbarmod.gui.general.immediatelypopup.title=Näytä valikko välittömästi
+quickhotbarmod.gui.general.immediatelypopup.tooltip=Jos valittuna, tavaravalikko näytetään<br>välittömästi rullausnäppäimen painalluksen jälkeen.
+quickhotbarmod.gui.general.scrollwithnumbers.title=Rullaa numeroilla
+quickhotbarmod.gui.general.scrollwithnumbers.tooltip=Jos valittuna, pystyt rullaamaan<br>kolumneja painamalla numeron<br>ja rullaamalla.
+quickhotbarmod.gui.general.scrollwithkeyboard.title=Rullaa näppäimistöllä
+quickhotbarmod.gui.general.scrollwithkeyboard.tooltip=Jos valittuna, pystyt rullaamaan<br>tavaravalikon rivejä näppäimistöllä.
+quickhotbarmod.gui.general.allowmodeswitch.title=Salli tilan vaihtaminen
+quickhotbarmod.gui.general.allowmodeswitch.tooltip=Jos valittuna, pystyt vaihtamaan rivin<br>ja kolumnin vaihtamisen välillä.
+quickhotbarmod.gui.general.reversescrolling.title=Käänteinen rullaus
+quickhotbarmod.gui.general.reversescrolling.tooltip=Jos valittuna, hiiren rullauksen<br>suunta on käänteinen.
+
+# KEYBINDINGS GUI
+quickhotbarmod.gui.keybindings.reservederror=Virhe: Tämä pikanäppäin on jo käytössä.
+quickhotbarmod.gui.keybindings.typekeyhelptext=Paina jokin näppäin alas...<br>Paina esc tai klikkaa<br>muualle peruuttaksesi.
+quickhotbarmod.gui.keybindings.keymodifier=Alaspainettava näppäin
+quickhotbarmod.gui.keybindings.keyswitchmode=Vaihda tilaa
+quickhotbarmod.gui.keybindings.keyopeninventory=Avaa valikko
+quickhotbarmod.gui.keybindings.keymanualscrollup=Manuaalinen rullaus ylös
+quickhotbarmod.gui.keybindings.keymanualscrolldown=Manuaalinen rullaus alas
+
+# CHAT TEXT
+quickhotbarmod.chat.or=tai
+quickhotbarmod.chat.numberkeyandscroll=Numeronäppäin + rullaa vaihtaaksesi kolumneja
+quickhotbarmod.chat.toviewmodsettings=nähdäksesi modin asetukset
+quickhotbarmod.chat.loaded=ladattu
+quickhotbarmod.chat.mousewheel=hiiren rulla
+quickhotbarmod.chat.toscroll=rullataksesi
+quickhotbarmod.chat.rowscrolling=Vaihdettiin rivirullaukseen.
+quickhotbarmod.chat.columnscrolling=Vaihdettiin kolumnirullaukseen.

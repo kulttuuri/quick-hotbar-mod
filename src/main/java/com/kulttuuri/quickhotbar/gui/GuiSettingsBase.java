@@ -74,9 +74,9 @@ public abstract class GuiSettingsBase extends GuiScreen
         int nextButtonX = width / 2 - 171;
         int buttonY = height / 2 - 76;
 
-        tabList.add(new GuiButtonBetter(0, nextButtonX, buttonY, bSize, 20, "Information"));
-        tabList.add(new GuiButtonBetter(1, nextButtonX+=113, buttonY, bSize, 20, "Settings"));
-        tabList.add(new GuiButtonBetter(2, nextButtonX+=113, buttonY, bSize, 20, "Keybindings"));
+        tabList.add(new GuiButtonBetter(0, nextButtonX, buttonY, bSize, 20, TranslationHelper.translateString("quickhotbarmod.gui.tabs.information")));
+        tabList.add(new GuiButtonBetter(1, nextButtonX+=113, buttonY, bSize, 20, TranslationHelper.translateString("quickhotbarmod.gui.tabs.settings")));
+        tabList.add(new GuiButtonBetter(2, nextButtonX+=113, buttonY, bSize, 20, TranslationHelper.translateString("quickhotbarmod.gui.tabs.keybindings")));
 
         for (GuiButtonBetter button : tabList)
         {

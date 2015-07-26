@@ -118,7 +118,7 @@ public class GuiSettingsKeyBindings extends GuiSettingsBase
             {
                 if (!setKeyBinding(m, i))
                 {
-                    setErrorTooltip("Error: That keybinding is already reserved.", textfield.xPosition - (textfield.width / 6), textfield.yPosition);
+                    setErrorTooltip(TranslationHelper.translateString("quickhotbarmod.gui.keybindings.reservederror"), textfield.xPosition - (textfield.width / 6), textfield.yPosition);
                 }
                 textfield.setFocused(false);
                 updateValues();
@@ -190,13 +190,13 @@ public class GuiSettingsKeyBindings extends GuiSettingsBase
     {
         super.drawScreen(i, j, f);
 
-        fontRenderer.drawString("Modifier Key:", width / 2 - 160, height / 2 - 45, 0x000000);
+        fontRenderer.drawString(TranslationHelper.translateString("quickhotbarmod.gui.keybindings.keymodifier")+":", width / 2 - 160, height / 2 - 45, 0x000000);
 
-        fontRenderer.drawString("Switch Mode:", width / 2 - 160, height / 2 + 5, 0x000000);
-        fontRenderer.drawString("Open Inventory:", width / 2 - 160, height / 2 + 35, 0x000000);
+        fontRenderer.drawString(TranslationHelper.translateString("quickhotbarmod.gui.keybindings.keyswitchmode")+":", width / 2 - 160, height / 2 + 5, 0x000000);
+        fontRenderer.drawString(TranslationHelper.translateString("quickhotbarmod.gui.keybindings.keyopeninventory")+":", width / 2 - 160, height / 2 + 35, 0x000000);
 
-        fontRenderer.drawString("Manual Scroll Up:", width / 2 - 30, height / 2 + 5, 0x000000);
-        fontRenderer.drawString("Manual Scroll Down:", width / 2 - 30, height / 2 + 35, 0x000000);
+        fontRenderer.drawString(TranslationHelper.translateString("quickhotbarmod.gui.keybindings.keymanualscrollup")+":", width / 2 - 30, height / 2 + 5, 0x000000);
+        fontRenderer.drawString(TranslationHelper.translateString("quickhotbarmod.gui.keybindings.keymanualscrolldown")+":", width / 2 - 30, height / 2 + 35, 0x000000);
 
         boolean updateCursor = Minecraft.getMinecraft().getSystemTime() % 3 == 0 ? true : false;
         for (GuiTextField textfield : textfieldBindings)
@@ -205,7 +205,7 @@ public class GuiSettingsKeyBindings extends GuiSettingsBase
             if (updateCursor) textfield.updateCursorCounter();
             if (textfield.isFocused())
             {
-                ToolTipHelper.setTooltip("Type a key...<br>Press esc or click<br>anywhere to cancel.", textfield.xPosition - (textfield.width / 6) + 1, textfield.yPosition);
+                ToolTipHelper.setTooltip(TranslationHelper.translateString("quickhotbarmod.gui.keybindings.typekeyhelptext"), textfield.xPosition - (textfield.width / 6) + 1, textfield.yPosition);
                 errorSetTime = 0;
             }
         }

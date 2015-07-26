@@ -16,6 +16,7 @@
 package com.kulttuuri.quickhotbar;
 
 import com.kulttuuri.quickhotbar.gui.GuiSettingsBase;
+import com.kulttuuri.quickhotbar.gui.TranslationHelper;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -93,13 +94,13 @@ public class QuickHotbarEventHandler
             String keyNameOpenmenu = Keyboard.getKeyName(settings.KEY_OPEN_MOD_SETTINGS_MENU);
             String keyNameSwitchMode = Keyboard.getKeyName(settings.SCROLLING_KEY_SWITCH_MODE);
 
-			String orText = settings.ALLOW_SCROLLING_WITH_KEYBOARD ? " (or " + keyNameUp.toLowerCase() + " & " + keyNameDown.toLowerCase() + ")" : "";
+			String orText = settings.ALLOW_SCROLLING_WITH_KEYBOARD ? " ("+ TranslationHelper.translateString("quickhotbarmod.chat.or")+" " + keyNameUp.toLowerCase() + " & " + keyNameDown.toLowerCase() + ")" : "";
             //String switchModeText = settings.ALLOW_MODE_SWITCHING ? keyNameScrolling + " + " + keyNameSwitchMode + " to switch mode. " : "";
-			String numberSwitchText = settings.ENABLE_NUMBER_SCROLLING ? "Number key + scroll for column scrolling. " : "";
-            String openMenuText = settings.ENABLE_SETTING_MENU ? keyNameScrolling + " + " + keyNameOpenmenu + " to view mod settings." : "";
+			String numberSwitchText = settings.ENABLE_NUMBER_SCROLLING ? TranslationHelper.translateString("quickhotbarmod.chat.numberkeyandscroll") + " " : "";
+            String openMenuText = settings.ENABLE_SETTING_MENU ? keyNameScrolling + " + " + keyNameOpenmenu + " " + TranslationHelper.translateString("quickhotbarmod.chat.toviewmodsettings") : "";
 
-            String msg = "Quick Hotbar " + QuickHotbarModInfo.VERSION + " loaded. ";
-			msg = msg + keyNameScrolling + " + mouse wheel" + orText + " to scroll. ";
+            String msg = "Quick Hotbar " + QuickHotbarModInfo.VERSION + " "+TranslationHelper.translateString("quickhotbarmod.chat.loaded")+" ";
+			msg = msg + keyNameScrolling + " + " + TranslationHelper.translateString("quickhotbarmod.chat.mousewheel") + orText + " "+TranslationHelper.translateString("quickhotbarmod.chat.toscroll")+". ";
             msg = msg + numberSwitchText;
             msg = msg + openMenuText;
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation(msg, new Object[0]));
@@ -140,8 +141,8 @@ public class QuickHotbarEventHandler
             QuickHotbarMod.clientSettings.setCurrentSwitchMode(!QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW);
 
             String msg = "";
-            if (QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW) msg = "Switched to row scrolling.";
-            else msg = "Switched to column scrolling.";
+            if (QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW) msg = TranslationHelper.translateString("quickhotbarmod.chat.rowscrolling");
+            else msg = TranslationHelper.translateString("quickhotbarmod.chat.columnscrolling");
             Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation(msg, new Object[0]));
         }
 
