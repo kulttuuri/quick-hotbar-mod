@@ -4,7 +4,7 @@
   "name": "Quick Hotbar",
   "description": "While in game hold ctrl and and use the mousewheel to browse through your inventory rows.",
   "version": "1.04",
-  "mcversion": "1.8",
+  "mcversion": "1.8.9",
   "url": "www.quickhotbar.com",
   "updateUrl": "",
   "authorList": ["Kulttuuri"],

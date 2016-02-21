@@ -244,7 +244,7 @@ public class QuickHotbarEventHandler
 			Minecraft mc = Minecraft.getMinecraft();
 			mc.gameSettings.heldItemTooltips = false; // Disable the selected item name rendering in the screen while showing preview of itemslots
 			
-			ScaledResolution res = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+			ScaledResolution res = new ScaledResolution(mc);
 	        int width = res.getScaledWidth();
 	        int height = res.getScaledHeight();
 			renderHotbar(mc.ingameGUI, 3, 43, width, height, event.renderTickTime);
@@ -348,20 +348,21 @@ public class QuickHotbarEventHandler
 		    {
 		        try
 		        {
-		        	Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(1);
+		        	event.setCanceled(true);
+		        	//Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(1);
 		        	switchItemRows(false, false, whichNumberKeyIsDown() != 0 ? false : QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW);
 		        }
 		        catch (Exception e)
 		        {
 		        	e.printStackTrace();
 		        }
-		        
 		    }
 		    else if (dWheel > 0)
 		    {
 		        try
 		        {
-		        	Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(-1);
+		        	event.setCanceled(true);
+		        	//Minecraft.getMinecraft().thePlayer.inventory.changeCurrentItem(-1);
 		        	switchItemRows(true, false, whichNumberKeyIsDown() != 0 ? false : QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW);
 		        }
 		        catch (Exception e)
@@ -432,14 +433,14 @@ public class QuickHotbarEventHandler
         if ((!reverseScrolling && !directionUp) || (reverseScrolling && directionUp))
         {
             int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
-            if (!isScrollingWithKeyboard) currentSlot = currentSlot + 1;
+            //if (!isScrollingWithKeyboard) currentSlot = currentSlot + 1; // I don't know why this was here.
             if (currentSlot >= 9) currentSlot = 0;
             return currentSlot;
         }
         else
         {
             int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
-            if (!isScrollingWithKeyboard) currentSlot = currentSlot - 1;
+            //if (!isScrollingWithKeyboard) currentSlot = currentSlot - 1; // I don't know why this was here.
             if (currentSlot < 0) currentSlot = 8;
             return currentSlot;
 
