@@ -110,19 +110,19 @@ public class SettingsClient extends SettingsGlobal
         ENABLE_NUMBER_SCROLLING = enableNumberScrolling.getBoolean(true);
 		
 		// Save comments for settings
-		announceModLoaded.comment = "When you join a game, this mod prints out that is has been loaded and it's keybindings. Set to false to disable this behavior. Default: true";
-		enableSettingMenu.comment = "If this is true, you are able to open mod settings menu. Default: true";
-        keyBindingsScroll.comment = "Key which you need to hold down to scroll between inventory rows. Default: KEY_LCONTROL. Should you wish to change this key, you can find all supported keys from here: http://www.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html";
-        keyBindingSwitchMode.comment = "Key which you can use to switch between row and column switching while also holding the scrolling key. Default: KEY_C. Should you wish to change this key, you can find all supported keys from here: http://www.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html";
-        allowModeSwitching.comment = "Should you be able to change between row and column switching modes. Default: true";
-        keyBindingOpenSettingsMenu.comment = "Keybinding which opens the settings menu. Note that you will also need to hold down the scrolling key to open the menu, for ex. ctrl + m. Default: KEY_M";
-        modeSwitchingIsDefaultMode.comment = "If true, by default you will browse between rows. If false by default you will browse through columns. Default: true";
-        immediately_show_popup_menu.comment = "If this is true, popup menu will be shown immediately instead of waiting till user scrolls. Default: false";
-		reverseMouseWheelScrolling.comment = "If this is true, mousewheel scrolling will be reversed. Default: false";
-        allowKeyboardScroll.comment = "If this is true, user can scroll inventory rows with bind keyboard keys. Default: true";
-		scrollKeyUp.comment = "Keyboard key which can be used to scroll inventory rows up. Default: KEY_UP. Should you wish to change this key, you can find all supported keys from here: http://www.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html";
-		scrollKeyDown.comment = "Keyboard key which can be used to scroll inventory rows down. Default: KEY_DOWN. Should you wish to change this key, you can find all supported keys from here: http://www.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html";
-		enableNumberScrolling.comment = "Should you be able to hold down inventory number slot and scroll that column. Default: true";
+		announceModLoaded.setComment("When you join a game, this mod prints out that is has been loaded and it's keybindings. Set to false to disable this behavior. Default: true");
+		enableSettingMenu.setComment("If this is true, you are able to open mod settings menu. Default: true");
+        keyBindingsScroll.setComment("Key which you need to hold down to scroll between inventory rows. Default: KEY_LCONTROL. Should you wish to change this key, you can find all supported keys from here: http://www.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html");
+        keyBindingSwitchMode.setComment("Key which you can use to switch between row and column switching while also holding the scrolling key. Default: KEY_C. Should you wish to change this key, you can find all supported keys from here: http://www.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html");
+        allowModeSwitching.setComment("Should you be able to change between row and column switching modes. Default: true");
+        keyBindingOpenSettingsMenu.setComment("Keybinding which opens the settings menu. Note that you will also need to hold down the scrolling key to open the menu, for ex. ctrl + m. Default: KEY_M");
+        modeSwitchingIsDefaultMode.setComment("If true, by default you will browse between rows. If false by default you will browse through columns. Default: true");
+        immediately_show_popup_menu.setComment("If this is true, popup menu will be shown immediately instead of waiting till user scrolls. Default: false");
+		reverseMouseWheelScrolling.setComment("If this is true, mousewheel scrolling will be reversed. Default: false");
+        allowKeyboardScroll.setComment("If this is true, user can scroll inventory rows with bind keyboard keys. Default: true");
+		scrollKeyUp.setComment("Keyboard key which can be used to scroll inventory rows up. Default: KEY_UP. Should you wish to change this key, you can find all supported keys from here: http://www.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html");
+		scrollKeyDown.setComment("Keyboard key which can be used to scroll inventory rows down. Default: KEY_DOWN. Should you wish to change this key, you can find all supported keys from here: http://www.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html");
+		enableNumberScrolling.setComment("Should you be able to hold down inventory number slot and scroll that column. Default: true");
 
 		config.save();
 	}

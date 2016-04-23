@@ -15,7 +15,7 @@
 
 package com.kulttuuri.quickhotbar.gui;
 
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.translation.I18n;
 
 public class TranslationHelper
 {
@@ -26,7 +26,7 @@ public class TranslationHelper
      * to find the translation in en_US language. Returns back the original key if no result was found.
      */
     public static String translateString(String key) {
-        String result = StatCollector.translateToLocal(key);
+        String result = I18n.translateToLocal(key);
         if (result == null || result.isEmpty()) {
             return key;
         }

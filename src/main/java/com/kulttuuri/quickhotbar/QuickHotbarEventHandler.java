@@ -29,11 +29,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.ClickType;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
@@ -103,7 +105,7 @@ public class QuickHotbarEventHandler
 			msg = msg + keyNameScrolling + " + " + TranslationHelper.translateString("quickhotbarmod.chat.mousewheel") + orText + " "+TranslationHelper.translateString("quickhotbarmod.chat.toscroll")+". ";
             msg = msg + numberSwitchText;
             msg = msg + openMenuText;
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation(msg, new Object[0]));
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new TextComponentTranslation(msg, new Object[0]));
 		}
 	}
 	
@@ -118,7 +120,7 @@ public class QuickHotbarEventHandler
 
         if ((whichNumberKeyIsDown() != 0 || Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY)) && renderQuickHotbarPreview)
         {
-            event.posY -= 60;
+        	event.setPosY(60);
         }
     }
 	
@@ -143,7 +145,7 @@ public class QuickHotbarEventHandler
             String msg = "";
             if (QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW) msg = TranslationHelper.translateString("quickhotbarmod.chat.rowscrolling");
             else msg = TranslationHelper.translateString("quickhotbarmod.chat.columnscrolling");
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation(msg, new Object[0]));
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new TextComponentTranslation(msg, new Object[0]));
         }
 
         if (QuickHotbarMod.clientSettings.ENABLE_SETTING_MENU
@@ -153,7 +155,20 @@ public class QuickHotbarEventHandler
             Minecraft.getMinecraft().displayGuiScreen(GuiSettingsBase.currentGuiScreen);
         }
 
-		if (QuickHotbarMod.clientSettings.IMMEDIATELY_SHOW_POPUP_MENU && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY)) renderQuickHotbarPreview = true;
+		if (QuickHotbarMod.clientSettings.IMMEDIATELY_SHOW_POPUP_MENU && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY)) {
+			renderQuickHotbarPreview = true;
+	    	// TODO: DEBUG STUFF, REMOVE
+			System.out.println("YEP!");
+	        
+	        /*Minecraft.getMinecraft().playerController.func_187098_a(0, 28, 0, ClickType.SWAP, Minecraft.getMinecraft().thePlayer);
+	        Minecraft.getMinecraft().playerController.func_187098_a(0, 37, 0, ClickType.SWAP, Minecraft.getMinecraft().thePlayer);
+	        Minecraft.getMinecraft().playerController.func_187098_a(0, 28, 0, ClickType.SWAP, Minecraft.getMinecraft().thePlayer);
+	        
+	        Minecraft.getMinecraft().playerController.func_187098_a(0, 36, 0, ClickType.SWAP, Minecraft.getMinecraft().thePlayer);
+	        Minecraft.getMinecraft().playerController.func_187098_a(0, 27, 0, ClickType.SWAP, Minecraft.getMinecraft().thePlayer);
+	        Minecraft.getMinecraft().playerController.func_187098_a(0, 36, 0, ClickType.SWAP, Minecraft.getMinecraft().thePlayer);
+			*/
+		}
 		
 		if (QuickHotbarMod.clientSettings.ALLOW_SCROLLING_WITH_KEYBOARD)
 		{
@@ -222,7 +237,7 @@ public class QuickHotbarEventHandler
     {
     	if (renderQuickHotbarPreview && (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) || whichNumberKeyIsDown() != 0))
     	{
-	    	if (event.type == event.type.FOOD || event.type == event.type.HEALTH || event.type == event.type.EXPERIENCE || event.type == event.type.ARMOR)
+	    	if (event.getType() == event.getType().FOOD || event.getType() == event.getType().HEALTH || event.getType() == event.getType().EXPERIENCE || event.getType() == event.getType().ARMOR)
 	    	{
 	    		event.setCanceled(true);
 	    	}
@@ -341,7 +356,7 @@ public class QuickHotbarEventHandler
 	@SubscribeEvent
 	public void handleMouseScroll(MouseEvent event)
 	{
-	    int dWheel = event.dwheel;
+	    int dWheel = event.getDwheel();
 	    if (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) || whichNumberKeyIsDown() != 0)
 	    {
 		    if (dWheel < 0)
@@ -374,7 +389,7 @@ public class QuickHotbarEventHandler
 	}
 
     private void switchItemRows(boolean directionUp, boolean isScrollingWithKeyboard, boolean changeRow) throws Exception
-    {
+    {    	
         boolean reverseScrolling = QuickHotbarMod.clientSettings.REVERSE_MOUSEWHEEL_SCROLLING;
         // Direction can only be reversed with mouse scrolling
         if (!isScrollingWithKeyboard)
@@ -475,8 +490,19 @@ public class QuickHotbarEventHandler
         // We add 9 because first row is crafting stuff (yeah, frigging inventorycontainer ordering...)
         slot1 = slot1 + 9;
         slot2 = slot2 + 9;
-        Minecraft.getMinecraft().playerController.windowClick(inventoryId, slot1, rightClick, holdingShift, Minecraft.getMinecraft().thePlayer);
-        Minecraft.getMinecraft().playerController.windowClick(inventoryId, slot2, rightClick, holdingShift, Minecraft.getMinecraft().thePlayer);
-        Minecraft.getMinecraft().playerController.windowClick(inventoryId, slot1, rightClick, holdingShift, Minecraft.getMinecraft().thePlayer);
+
+        ClickType clickType = ClickType.SWAP;
+        ItemStack currentStack = Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(slot1);
+        ItemStack currentStack2 = Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(slot2);
+        if (currentStack != null) System.out.println("Slot1 to slot2: " + slot1 + " to " + slot2 + " " + currentStack);
+        if (currentStack2 != null) System.out.println("Slot2 to slot1: " + slot2 + " to " + slot1 + " " + currentStack2);
+        
+        Minecraft.getMinecraft().playerController.func_187098_a(inventoryId, slot1, rightClick, clickType, Minecraft.getMinecraft().thePlayer);
+        Minecraft.getMinecraft().playerController.func_187098_a(inventoryId, slot2, rightClick, clickType, Minecraft.getMinecraft().thePlayer);
+        Minecraft.getMinecraft().playerController.func_187098_a(inventoryId, slot1, rightClick, clickType, Minecraft.getMinecraft().thePlayer);
+        
+        //Minecraft.getMinecraft().playerController.windowClick(inventoryId, slot1, rightClick, holdingShift, Minecraft.getMinecraft().thePlayer);
+        //Minecraft.getMinecraft().playerController.windowClick(inventoryId, slot2, rightClick, holdingShift, Minecraft.getMinecraft().thePlayer);
+        //Minecraft.getMinecraft().playerController.windowClick(inventoryId, slot1, rightClick, holdingShift, Minecraft.getMinecraft().thePlayer);
     }
 }
