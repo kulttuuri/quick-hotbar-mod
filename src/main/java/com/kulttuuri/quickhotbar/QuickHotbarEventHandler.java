@@ -155,20 +155,7 @@ public class QuickHotbarEventHandler
             Minecraft.getMinecraft().displayGuiScreen(GuiSettingsBase.currentGuiScreen);
         }
 
-		if (QuickHotbarMod.clientSettings.IMMEDIATELY_SHOW_POPUP_MENU && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY)) {
-			renderQuickHotbarPreview = true;
-	    	// TODO: DEBUG STUFF, REMOVE
-			System.out.println("YEP!");
-	        
-	        /*Minecraft.getMinecraft().playerController.func_187098_a(0, 28, 0, ClickType.SWAP, Minecraft.getMinecraft().thePlayer);
-	        Minecraft.getMinecraft().playerController.func_187098_a(0, 37, 0, ClickType.SWAP, Minecraft.getMinecraft().thePlayer);
-	        Minecraft.getMinecraft().playerController.func_187098_a(0, 28, 0, ClickType.SWAP, Minecraft.getMinecraft().thePlayer);
-	        
-	        Minecraft.getMinecraft().playerController.func_187098_a(0, 36, 0, ClickType.SWAP, Minecraft.getMinecraft().thePlayer);
-	        Minecraft.getMinecraft().playerController.func_187098_a(0, 27, 0, ClickType.SWAP, Minecraft.getMinecraft().thePlayer);
-	        Minecraft.getMinecraft().playerController.func_187098_a(0, 36, 0, ClickType.SWAP, Minecraft.getMinecraft().thePlayer);
-			*/
-		}
+		if (QuickHotbarMod.clientSettings.IMMEDIATELY_SHOW_POPUP_MENU && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY)) renderQuickHotbarPreview = true;
 		
 		if (QuickHotbarMod.clientSettings.ALLOW_SCROLLING_WITH_KEYBOARD)
 		{
@@ -413,32 +400,32 @@ public class QuickHotbarEventHandler
         {
             if (changeRow)
             {
-                switchItemRows(3, 2);
-                switchItemRows(2, 1);
-                switchItemRows(1, 0);
+                switchItemRows(3, 2, directionUp);
+                switchItemRows(2, 1, directionUp);
+                switchItemRows(1, 0, directionUp);
             }
             else
             {
                 int currentSlot = getCurrentSlot(directionUp, reverseScrolling, isScrollingWithKeyboard);
-                switchItemsInSlots(3 * ITEMS_IN_ROW + currentSlot, 2 * ITEMS_IN_ROW + currentSlot);
-                switchItemsInSlots(2 * ITEMS_IN_ROW + currentSlot, 1 * ITEMS_IN_ROW + currentSlot);
-                switchItemsInSlots(1 * ITEMS_IN_ROW + currentSlot, 0 * ITEMS_IN_ROW + currentSlot);
+                switchItemsInSlots(3 * ITEMS_IN_ROW + currentSlot, 2 * ITEMS_IN_ROW + currentSlot, directionUp);
+                switchItemsInSlots(2 * ITEMS_IN_ROW + currentSlot, 1 * ITEMS_IN_ROW + currentSlot, directionUp);
+                switchItemsInSlots(1 * ITEMS_IN_ROW + currentSlot, 0 * ITEMS_IN_ROW + currentSlot, directionUp);
             }
         }
         else
         {
             if (changeRow)
             {
-                switchItemRows(0, 1);
-                switchItemRows(1, 2);
-                switchItemRows(2, 3);
+                switchItemRows(0, 1, directionUp);
+                switchItemRows(1, 2, directionUp);
+                switchItemRows(2, 3, directionUp);
             }
             else
             {
                 int currentSlot = getCurrentSlot(directionUp, reverseScrolling, isScrollingWithKeyboard);
-                switchItemsInSlots(0 * ITEMS_IN_ROW + currentSlot, 1 * ITEMS_IN_ROW + currentSlot);
-                switchItemsInSlots(1 * ITEMS_IN_ROW + currentSlot, 2 * ITEMS_IN_ROW + currentSlot);
-                switchItemsInSlots(2 * ITEMS_IN_ROW + currentSlot, 3 * ITEMS_IN_ROW + currentSlot);
+                switchItemsInSlots(0 * ITEMS_IN_ROW + currentSlot, 1 * ITEMS_IN_ROW + currentSlot, directionUp);
+                switchItemsInSlots(1 * ITEMS_IN_ROW + currentSlot, 2 * ITEMS_IN_ROW + currentSlot, directionUp);
+                switchItemsInSlots(2 * ITEMS_IN_ROW + currentSlot, 3 * ITEMS_IN_ROW + currentSlot, directionUp);
             }
         }
     }
@@ -467,11 +454,11 @@ public class QuickHotbarEventHandler
         QuickHotbarMod.instance.proxy.simpleNetworkWrapper.sendToServer(new PacketChangeCurrentRow(directionUp, changeRow));
     }
 
-    private void switchItemRows(int row1, int row2)
+    private void switchItemRows(int row1, int row2, boolean directionUp)
     {
         for (int i = 0; i < ITEMS_IN_ROW; i++)
         {
-            switchItemsInSlots(row1 * ITEMS_IN_ROW + i, row2 * ITEMS_IN_ROW + i);
+            switchItemsInSlots(row1 * ITEMS_IN_ROW + i, row2 * ITEMS_IN_ROW + i, directionUp);
         }
     }
 
@@ -480,8 +467,9 @@ public class QuickHotbarEventHandler
      * do it on client.
      * @param slot1 slot 1.
      * @param slot2 slot 2.
+     * @param directionUp are we going up or down the inventory.
      */
-    private void switchItemsInSlots(int slot1, int slot2)
+    private void switchItemsInSlots(int slot1, int slot2, boolean directionUp)
     {
         int inventoryId = 0; /** The id of the window which was clicked. 0 for player inventory. */
         int rightClick = 0; /** 1 when right-clicking and otherwise 0 */
@@ -492,14 +480,11 @@ public class QuickHotbarEventHandler
         slot2 = slot2 + 9;
 
         ClickType clickType = ClickType.SWAP;
-        ItemStack currentStack = Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(slot1);
-        ItemStack currentStack2 = Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(slot2);
-        if (currentStack != null) System.out.println("Slot1 to slot2: " + slot1 + " to " + slot2 + " " + currentStack);
-        if (currentStack2 != null) System.out.println("Slot2 to slot1: " + slot2 + " to " + slot1 + " " + currentStack2);
         
-        Minecraft.getMinecraft().playerController.func_187098_a(inventoryId, slot1, rightClick, clickType, Minecraft.getMinecraft().thePlayer);
-        Minecraft.getMinecraft().playerController.func_187098_a(inventoryId, slot2, rightClick, clickType, Minecraft.getMinecraft().thePlayer);
-        Minecraft.getMinecraft().playerController.func_187098_a(inventoryId, slot1, rightClick, clickType, Minecraft.getMinecraft().thePlayer);
+        // Note: We prevent Minecraft 1.9 bug where slot 26 does not swap items correctly if that slot is empty and going up by doing this trickery.
+        Minecraft.getMinecraft().playerController.func_187098_a(inventoryId, !directionUp ? slot1 : slot2, rightClick, clickType, Minecraft.getMinecraft().thePlayer);
+        Minecraft.getMinecraft().playerController.func_187098_a(inventoryId, !directionUp ? slot2 : slot1, rightClick, clickType, Minecraft.getMinecraft().thePlayer);
+        Minecraft.getMinecraft().playerController.func_187098_a(inventoryId, !directionUp ? slot1 : slot2, rightClick, clickType, Minecraft.getMinecraft().thePlayer);
         
         //Minecraft.getMinecraft().playerController.windowClick(inventoryId, slot1, rightClick, holdingShift, Minecraft.getMinecraft().thePlayer);
         //Minecraft.getMinecraft().playerController.windowClick(inventoryId, slot2, rightClick, holdingShift, Minecraft.getMinecraft().thePlayer);
