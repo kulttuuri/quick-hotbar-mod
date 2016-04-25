@@ -8,7 +8,7 @@ This is a branch where development for Quick Hotbar Mod for Minecraft 1.9 happen
 
 ## Minecraft Forge Version
 
-This source code has been last tested and compiled with Minecraft Forge version ***.
+This source code has been last tested and compiled with Minecraft Forge version forge-1.9-12.16.0.1865-1.9.
 
 ## Development
 
