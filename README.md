@@ -1,6 +1,6 @@
 # Quick Hotbar Mod
 
-This is a Forge Mod for Minecraft that works with Minecraft versions 1.6.4, 1.7.2, 1.7.10, 1.8 and 1.8.9. **Note: Actual code for the mod can be found from branches that are named by Minecraft versions.**
+This is a Forge Mod for Minecraft that works with Minecraft versions 1.6.4, 1.7.2, 1.7.10, 1.8, 1.8.9 and 1.9. **Note: Actual code for the mod can be found from branches that are named by Minecraft versions.**
 
 ![Screenshot](http://i.imgur.com/6v1kdQ7.png)
 
