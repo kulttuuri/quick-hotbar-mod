@@ -482,9 +482,9 @@ public class QuickHotbarEventHandler
         ClickType clickType = ClickType.SWAP;
         
         // Note: We prevent Minecraft 1.9 bug where slot 26 does not swap items correctly if that slot is empty and going up by doing this trickery.
-        Minecraft.getMinecraft().playerController.func_187098_a(inventoryId, !directionUp ? slot1 : slot2, rightClick, clickType, Minecraft.getMinecraft().thePlayer);
-        Minecraft.getMinecraft().playerController.func_187098_a(inventoryId, !directionUp ? slot2 : slot1, rightClick, clickType, Minecraft.getMinecraft().thePlayer);
-        Minecraft.getMinecraft().playerController.func_187098_a(inventoryId, !directionUp ? slot1 : slot2, rightClick, clickType, Minecraft.getMinecraft().thePlayer);
+        Minecraft.getMinecraft().playerController.windowClick(inventoryId, !directionUp ? slot1 : slot2, rightClick, clickType, Minecraft.getMinecraft().thePlayer);
+        Minecraft.getMinecraft().playerController.windowClick(inventoryId, !directionUp ? slot2 : slot1, rightClick, clickType, Minecraft.getMinecraft().thePlayer);
+        Minecraft.getMinecraft().playerController.windowClick(inventoryId, !directionUp ? slot1 : slot2, rightClick, clickType, Minecraft.getMinecraft().thePlayer);
         
         //Minecraft.getMinecraft().playerController.windowClick(inventoryId, slot1, rightClick, holdingShift, Minecraft.getMinecraft().thePlayer);
         //Minecraft.getMinecraft().playerController.windowClick(inventoryId, slot2, rightClick, holdingShift, Minecraft.getMinecraft().thePlayer);
