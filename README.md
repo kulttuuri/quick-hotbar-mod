@@ -1,6 +1,6 @@
-# Quick Hotbar Mod 1.10
+# Quick Hotbar Mod 1.10.2
 
-This is a branch where development for Quick Hotbar Mod for Minecraft 1.10 happens. More information about the mod and downloads can be found from [here](https://github.com/kulttuuri/quick-hotbar-mod).
+This is a branch where development for Quick Hotbar Mod for Minecraft 1.10.2 happens. More information about the mod and downloads can be found from [here](https://github.com/kulttuuri/quick-hotbar-mod).
 
 ## Mod Version
 
@@ -8,7 +8,7 @@ This is a branch where development for Quick Hotbar Mod for Minecraft 1.10 happe
 
 ## Minecraft Forge Version
 
-This source code has been last tested and compiled with Minecraft Forge version forge-1.10-12.18.0.2000-1.10.0.
+This source code has been last tested and compiled with Minecraft Forge version forge-1.10.2-12.18.1.2011.
 
 ## Development
 
