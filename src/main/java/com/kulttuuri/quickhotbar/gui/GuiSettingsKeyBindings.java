@@ -21,6 +21,9 @@ import com.kulttuuri.quickhotbar.settings.SettingsClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
+import scala.Console;
 
 import java.util.ArrayList;
 
@@ -73,11 +76,11 @@ public class GuiSettingsKeyBindings extends GuiSettingsBase
     {
         SettingsClient set = QuickHotbarMod.clientSettings;
 
-        textfieldBindings.get(TEXTFIELD_MODIFIER).setText(Keyboard.getKeyName(set.SCROLLING_KEY));
-        textfieldBindings.get(TEXTFIELD_SWITCH_MODE).setText(Keyboard.getKeyName(set.SCROLLING_KEY_SWITCH_MODE));
-        textfieldBindings.get(TEXTFIELD_OPEN_MENU).setText(Keyboard.getKeyName(set.KEY_OPEN_MOD_SETTINGS_MENU));
-        textfieldBindings.get(TEXTFIELD_SCROLL_UP).setText(Keyboard.getKeyName(set.SCROLLING_KEY_UP));
-        textfieldBindings.get(TEXTFIELD_SCROLL_DOWN).setText(Keyboard.getKeyName(set.SCROLLING_KEY_DOWN));
+        textfieldBindings.get(TEXTFIELD_MODIFIER).setText(set.SCROLLING_KEY.getEventNameShort());
+        textfieldBindings.get(TEXTFIELD_SWITCH_MODE).setText(set.SCROLLING_KEY_SWITCH_MODE.getEventNameShort());
+        textfieldBindings.get(TEXTFIELD_OPEN_MENU).setText(set.KEY_OPEN_MOD_SETTINGS_MENU.getEventNameShort());
+        textfieldBindings.get(TEXTFIELD_SCROLL_UP).setText(set.SCROLLING_KEY_UP.getEventNameShort());
+        textfieldBindings.get(TEXTFIELD_SCROLL_DOWN).setText(set.SCROLLING_KEY_DOWN.getEventNameShort());
     }
 
     @Override
@@ -86,15 +89,29 @@ public class GuiSettingsKeyBindings extends GuiSettingsBase
         super.mouseClicked(i, j, k);
 
         updateValues();
-
+        
+        int m = 0;
         for (GuiTextField textfield : textfieldBindings)
         {
             textfield.mouseClicked(i, j, k);
+            
+            if (textfield.isFocused() && Mouse.getEventButton() != -1 && Mouse.getEventButton() != 0 && Mouse.getEventButton() !=  1)
+            {
+            	Console.out().println("Mouse pressed when binding key: " + i);
+                if (!setKeyBinding(m, Mouse.getButtonName(k)))
+                {
+                    setErrorTooltip(TranslationHelper.translateString("quickhotbarmod.gui.keybindings.reservederror"), textfield.xPosition - (textfield.width / 6), textfield.yPosition);
+                }
+                textfield.setFocused(false);
+                updateValues();
+            }
+            
             if (textfield.isFocused())
             {
                 textfield.setText("");
                 isEditingKeybinding = true;
             }
+            m += 1;
         }
     }
 
@@ -116,7 +133,7 @@ public class GuiSettingsKeyBindings extends GuiSettingsBase
             }
             else if (textfield.isFocused() && i != Keyboard.KEY_NONE)
             {
-                if (!setKeyBinding(m, i))
+                if (!setKeyBinding(m, Keyboard.getKeyName(i)))
                 {
                     setErrorTooltip(TranslationHelper.translateString("quickhotbarmod.gui.keybindings.reservederror"), textfield.xPosition - (textfield.width / 6), textfield.yPosition);
                 }
@@ -131,46 +148,54 @@ public class GuiSettingsKeyBindings extends GuiSettingsBase
         }
     }
 
-    private boolean setKeyBinding(int keybinding, int key)
+    /**
+     * 
+     * @param textfieldNumber textfield id which user is editing.
+     * @param eventName Key / mouse press event name.
+     * @return true if keybinding was set to settings.
+     */
+    private boolean setKeyBinding(int textfieldNumber, String eventName)
     {
         SettingsClient set = QuickHotbarMod.clientSettings;
+        
+        boolean isKeyboardKey = eventName.startsWith("BUTTON");
 
-        if (isKeybindingReserved(key)) return false;
+        if (isKeybindingReserved(eventName)) return false;
 
-        if (keybinding == TEXTFIELD_MODIFIER)
+        if (textfieldNumber == TEXTFIELD_MODIFIER)
         {
-            set.SCROLLING_KEY = key;
+            set.SCROLLING_KEY.setKeyEventName(eventName);
         }
-        else if (keybinding == TEXTFIELD_SWITCH_MODE)
+        else if (textfieldNumber == TEXTFIELD_SWITCH_MODE)
         {
-            set.SCROLLING_KEY_SWITCH_MODE = key;
+            set.SCROLLING_KEY_SWITCH_MODE.setKeyEventName(eventName);
         }
-        else if (keybinding == TEXTFIELD_OPEN_MENU)
+        else if (textfieldNumber == TEXTFIELD_OPEN_MENU)
         {
-            set.KEY_OPEN_MOD_SETTINGS_MENU = key;
+            set.KEY_OPEN_MOD_SETTINGS_MENU.setKeyEventName(eventName);
         }
-        else if (keybinding == TEXTFIELD_SCROLL_UP)
+        else if (textfieldNumber == TEXTFIELD_SCROLL_UP)
         {
-            set.SCROLLING_KEY_UP = key;
+            set.SCROLLING_KEY_UP.setKeyEventName(eventName);
         }
-        else if (keybinding == TEXTFIELD_SCROLL_DOWN)
+        else if (textfieldNumber == TEXTFIELD_SCROLL_DOWN)
         {
-            set.SCROLLING_KEY_DOWN = key;
+            set.SCROLLING_KEY_DOWN.setKeyEventName(eventName);
         }
 
         set.saveSettings();
         return true;
     }
 
-    private boolean isKeybindingReserved(int key)
+    private boolean isKeybindingReserved(String eventName)
     {
         SettingsClient set = QuickHotbarMod.clientSettings;
 
-        if (key == set.SCROLLING_KEY ||
-                key == set.SCROLLING_KEY_SWITCH_MODE ||
-                key == set.KEY_OPEN_MOD_SETTINGS_MENU ||
-                key == set.SCROLLING_KEY_UP ||
-                key == set.SCROLLING_KEY_DOWN)
+        if (eventName == set.SCROLLING_KEY.getEventName() ||
+        		eventName == set.SCROLLING_KEY_SWITCH_MODE.getEventName() ||
+        		eventName == set.KEY_OPEN_MOD_SETTINGS_MENU.getEventName() ||
+        		eventName == set.SCROLLING_KEY_UP.getEventName() ||
+                eventName == set.SCROLLING_KEY_DOWN.getEventName())
         {
             return true;
         }

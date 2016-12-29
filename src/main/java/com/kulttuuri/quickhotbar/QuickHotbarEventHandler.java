@@ -18,7 +18,6 @@ package com.kulttuuri.quickhotbar;
 import com.kulttuuri.quickhotbar.gui.GuiSettingsBase;
 import com.kulttuuri.quickhotbar.gui.TranslationHelper;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -61,15 +60,15 @@ public class QuickHotbarEventHandler
     {
         if (!QuickHotbarMod.clientSettings.ENABLE_NUMBER_SCROLLING) return 0;
 
-        if (Keyboard.isKeyDown(2)) return 1;
-        else if (Keyboard.isKeyDown(3)) return 2;
-        else if (Keyboard.isKeyDown(4)) return 3;
-        else if (Keyboard.isKeyDown(5)) return 4;
-        else if (Keyboard.isKeyDown(6)) return 5;
-        else if (Keyboard.isKeyDown(7)) return 6;
-        else if (Keyboard.isKeyDown(8)) return 7;
-        else if (Keyboard.isKeyDown(9)) return 8;
-        else if (Keyboard.isKeyDown(10)) return 9;
+        if (org.lwjgl.input.Keyboard.isKeyDown(2)) return 1;
+        else if (org.lwjgl.input.Keyboard.isKeyDown(3)) return 2;
+        else if (org.lwjgl.input.Keyboard.isKeyDown(4)) return 3;
+        else if (org.lwjgl.input.Keyboard.isKeyDown(5)) return 4;
+        else if (org.lwjgl.input.Keyboard.isKeyDown(6)) return 5;
+        else if (org.lwjgl.input.Keyboard.isKeyDown(7)) return 6;
+        else if (org.lwjgl.input.Keyboard.isKeyDown(8)) return 7;
+        else if (org.lwjgl.input.Keyboard.isKeyDown(9)) return 8;
+        else if (org.lwjgl.input.Keyboard.isKeyDown(10)) return 9;
         else return 0;
     }
 
@@ -90,11 +89,11 @@ public class QuickHotbarEventHandler
 		SettingsClient settings = QuickHotbarMod.clientSettings;
 		if (settings.ANNOUNCE_MOD_LOADED)
 		{
-			String keyNameScrolling = Keyboard.getKeyName(settings.SCROLLING_KEY).equals("LCONTROL") ? "left ctrl" : Keyboard.getKeyName(settings.SCROLLING_KEY).toLowerCase();
-			String keyNameUp = Keyboard.getKeyName(settings.SCROLLING_KEY_UP);
-			String keyNameDown = Keyboard.getKeyName(settings.SCROLLING_KEY_DOWN);
-            String keyNameOpenmenu = Keyboard.getKeyName(settings.KEY_OPEN_MOD_SETTINGS_MENU);
-            String keyNameSwitchMode = Keyboard.getKeyName(settings.SCROLLING_KEY_SWITCH_MODE);
+			String keyNameScrolling = settings.SCROLLING_KEY.getEventNameShort().equals("LCONTROL") ? "left ctrl" : settings.SCROLLING_KEY.getEventNameShort().toLowerCase();
+			String keyNameUp = settings.SCROLLING_KEY_UP.getEventNameShort().toLowerCase();
+			String keyNameDown = settings.SCROLLING_KEY_DOWN.getEventNameShort().toLowerCase();
+            String keyNameOpenmenu = settings.KEY_OPEN_MOD_SETTINGS_MENU.getEventNameShort().toLowerCase();
+            String keyNameSwitchMode = settings.SCROLLING_KEY_SWITCH_MODE.getEventNameShort().toLowerCase();
 
 			String orText = settings.ALLOW_SCROLLING_WITH_KEYBOARD ? " ("+ TranslationHelper.translateString("quickhotbarmod.chat.or")+" " + keyNameUp.toLowerCase() + " & " + keyNameDown.toLowerCase() + ")" : "";
             //String switchModeText = settings.ALLOW_MODE_SWITCHING ? keyNameScrolling + " + " + keyNameSwitchMode + " to switch mode. " : "";
@@ -118,7 +117,7 @@ public class QuickHotbarEventHandler
     {
         if (Minecraft.getMinecraft().currentScreen != null) return;
 
-        if ((whichNumberKeyIsDown() != 0 || Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY)) && renderQuickHotbarPreview)
+        if ((whichNumberKeyIsDown() != 0 || QuickHotbarMod.clientSettings.SCROLLING_KEY.isKeyDown()) && renderQuickHotbarPreview)
         {
         	event.setPosY(60);
         }
@@ -129,14 +128,14 @@ public class QuickHotbarEventHandler
 	{
         if (Minecraft.getMinecraft().currentScreen != null) return;
 
-        if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_SWITCH_MODE)) isModeSwitchKeyDown = false;
-        if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP)) isUpKeyDown = false;
-        if (!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_DOWN)) isDownKeyDown = false;
+        if (!QuickHotbarMod.clientSettings.SCROLLING_KEY_SWITCH_MODE.isKeyDown()) isModeSwitchKeyDown = false;
+        if (!QuickHotbarMod.clientSettings.SCROLLING_KEY_UP.isKeyDown()) isUpKeyDown = false;
+        if (!QuickHotbarMod.clientSettings.SCROLLING_KEY_DOWN.isKeyDown()) isDownKeyDown = false;
         if (whichNumberKeyIsDown() == 0) isNumberKeyDown = false;
 
         if (!isModeSwitchKeyDown &&
-            Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_SWITCH_MODE) &&
-            Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) &&
+        	QuickHotbarMod.clientSettings.SCROLLING_KEY_SWITCH_MODE.isKeyDown() &&
+        	QuickHotbarMod.clientSettings.SCROLLING_KEY.isKeyDown() &&
             QuickHotbarMod.clientSettings.ALLOW_MODE_SWITCHING)
         {
             isModeSwitchKeyDown = true;
@@ -149,18 +148,18 @@ public class QuickHotbarEventHandler
         }
 
         if (QuickHotbarMod.clientSettings.ENABLE_SETTING_MENU
-            && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY)
-            && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.KEY_OPEN_MOD_SETTINGS_MENU))
+            && QuickHotbarMod.clientSettings.SCROLLING_KEY.isKeyDown()
+            && QuickHotbarMod.clientSettings.KEY_OPEN_MOD_SETTINGS_MENU.isKeyDown())
         {
             Minecraft.getMinecraft().displayGuiScreen(GuiSettingsBase.currentGuiScreen);
         }
 
-		if (QuickHotbarMod.clientSettings.IMMEDIATELY_SHOW_POPUP_MENU && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY)) renderQuickHotbarPreview = true;
+		if (QuickHotbarMod.clientSettings.IMMEDIATELY_SHOW_POPUP_MENU && QuickHotbarMod.clientSettings.SCROLLING_KEY.isKeyDown()) renderQuickHotbarPreview = true;
 		
 		if (QuickHotbarMod.clientSettings.ALLOW_SCROLLING_WITH_KEYBOARD)
 		{
             // Number key down with arrow up key
-            if (!isUpKeyDown && whichNumberKeyIsDown() != 0 && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP))
+            if (!isUpKeyDown && whichNumberKeyIsDown() != 0 && QuickHotbarMod.clientSettings.SCROLLING_KEY_UP.isKeyDown())
             {
                 isNumberKeyDown = true;
                 isUpKeyDown = true;
@@ -175,7 +174,7 @@ public class QuickHotbarEventHandler
                 }
             }
             // Number key down with arrow down key
-            if (!isDownKeyDown && whichNumberKeyIsDown() != 0 && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_DOWN))
+            if (!isDownKeyDown && whichNumberKeyIsDown() != 0 && QuickHotbarMod.clientSettings.SCROLLING_KEY_DOWN.isKeyDown())
             {
                 isNumberKeyDown = true;
                 isDownKeyDown = true;
@@ -190,7 +189,7 @@ public class QuickHotbarEventHandler
                 }
             }
 
-			if (!isUpKeyDown && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_UP))
+			if (!isUpKeyDown && QuickHotbarMod.clientSettings.SCROLLING_KEY.isKeyDown() && QuickHotbarMod.clientSettings.SCROLLING_KEY_UP.isKeyDown())
 			{
 				isUpKeyDown = true;
 				try
@@ -203,7 +202,7 @@ public class QuickHotbarEventHandler
 					e.printStackTrace();
 				}
 			}
-			else if (!isDownKeyDown && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY_DOWN))
+			else if (!isDownKeyDown && QuickHotbarMod.clientSettings.SCROLLING_KEY.isKeyDown() && QuickHotbarMod.clientSettings.SCROLLING_KEY_DOWN.isKeyDown())
 			{
 				isDownKeyDown = true;
 				try
@@ -222,7 +221,7 @@ public class QuickHotbarEventHandler
     @SubscribeEvent
     public void hideInGameGuiElementsWhenPreviewIsOpen(RenderGameOverlayEvent.Pre event)
     {
-    	if (renderQuickHotbarPreview && (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) || whichNumberKeyIsDown() != 0))
+    	if (renderQuickHotbarPreview && (QuickHotbarMod.clientSettings.SCROLLING_KEY.isKeyDown() || whichNumberKeyIsDown() != 0))
     	{
 	    	if (event.getType() == event.getType().FOOD || event.getType() == event.getType().HEALTH || event.getType() == event.getType().EXPERIENCE || event.getType() == event.getType().ARMOR)
 	    	{
@@ -240,7 +239,7 @@ public class QuickHotbarEventHandler
 			announceModWelcomeMessage();
 		}
 		
-		if (renderQuickHotbarPreview && (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) || whichNumberKeyIsDown() != 0))
+		if (renderQuickHotbarPreview && (QuickHotbarMod.clientSettings.SCROLLING_KEY.isKeyDown() || whichNumberKeyIsDown() != 0))
 		{
 			if (Minecraft.getMinecraft().ingameGUI == null || !Minecraft.getMinecraft().inGameHasFocus) return;
 			Minecraft mc = Minecraft.getMinecraft();
@@ -253,7 +252,7 @@ public class QuickHotbarEventHandler
 			renderHotbar(mc.ingameGUI, 2, 63, width, height, event.renderTickTime);
 			renderHotbar(mc.ingameGUI, 1, 83, width, height, event.renderTickTime);
 		}
-		else if ((!Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) && !isNumberKeyDown) && renderQuickHotbarPreview)
+		else if ((!QuickHotbarMod.clientSettings.SCROLLING_KEY.isKeyDown() && !isNumberKeyDown) && renderQuickHotbarPreview)
 		{
 			renderQuickHotbarPreview = false;
 			// Enable back rendering of item name user changed slot into
@@ -312,11 +311,11 @@ public class QuickHotbarEventHandler
     {
     	Minecraft mc = Minecraft.getMinecraft();
     	
-        ItemStack itemstack = mc.thePlayer.inventory.mainInventory[par1];
+        ItemStack itemstack = mc.thePlayer.inventory.mainInventory.get(par1);
 
         if (itemstack != null)
         {
-            float f1 = (float)itemstack.animationsToGo - par4;
+            float f1 = (float)itemstack.func_190921_D() - par4;
             
             if (f1 > 0.0F)
             {
@@ -344,7 +343,7 @@ public class QuickHotbarEventHandler
 	public void handleMouseScroll(MouseEvent event)
 	{
 	    int dWheel = event.getDwheel();
-	    if (Keyboard.isKeyDown(QuickHotbarMod.clientSettings.SCROLLING_KEY) || whichNumberKeyIsDown() != 0)
+	    if (QuickHotbarMod.clientSettings.SCROLLING_KEY.isKeyDown() || whichNumberKeyIsDown() != 0)
 	    {
 		    if (dWheel < 0)
 		    {

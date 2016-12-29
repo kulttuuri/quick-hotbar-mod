@@ -74,7 +74,7 @@ public class GuiSettingsGeneral extends GuiSettingsBase
 
         for (GuiButtonBetter but : buttonList)
         {
-            but.buttonTextureFile = new ResourceLocation(QuickHotbarModInfo.MODID, "gui/buttonDisabled.png");
+            but.buttonTextureFile = new ResourceLocation(QuickHotbarModInfo.MODID, "gui/buttondisabled.png");
             but.alignToLeft = true;
             but.leftPadding = 20;
         }

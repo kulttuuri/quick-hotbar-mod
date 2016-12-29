@@ -62,7 +62,7 @@ public abstract class GuiSettingsBase extends GuiScreen
     {
         // Initialize Close GUI Button
         /*buttonCloseGUI = new GuiButtonBetter(0, width / 2 + 154, height / 2 - 100, 21, 20, "");
-        buttonCloseGUI.buttonTextureFile = new ResourceLocation(QuickHotbarModInfo.MODID, "gui/buttonClose.png");
+        buttonCloseGUI.buttonTextureFile = new ResourceLocation(QuickHotbarModInfo.MODID, "gui/buttonclose.png");
         buttonCloseGUI.setTextureRenderPositions(20, -20);
         buttonCloseGUI.isSelected = false;*/
 
@@ -280,17 +280,17 @@ public abstract class GuiSettingsBase extends GuiScreen
         if (state)
         {
             // If state was already set, return
-            if (button.buttonTextureFile.getResourcePath().equals("gui/buttonEnabled.png")) return;
+            if (button.buttonTextureFile.getResourcePath().equals("gui/buttonenabled.png")) return;
             // Otherwise set the state texture for the button
-            button.buttonTextureFile = new ResourceLocation(QuickHotbarModInfo.MODID, "gui/buttonEnabled.png");
+            button.buttonTextureFile = new ResourceLocation(QuickHotbarModInfo.MODID, "gui/buttonenabled.png");
         }
         // If button will need to be disableda
         else
         {
             // If state was already set, return
-            if (button.buttonTextureFile.getResourcePath().equals("gui/buttonDisabled.png")) return;
+            if (button.buttonTextureFile.getResourcePath().equals("gui/buttondisabled.png")) return;
             // Otherwise set the state texture for the button
-            button.buttonTextureFile = new ResourceLocation(QuickHotbarModInfo.MODID, "gui/buttonDisabled.png");
+            button.buttonTextureFile = new ResourceLocation(QuickHotbarModInfo.MODID, "gui/buttondisabled.png");
         }
     }
 
