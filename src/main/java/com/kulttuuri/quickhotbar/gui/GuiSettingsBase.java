@@ -271,7 +271,7 @@ public abstract class GuiSettingsBase extends GuiScreen
     /**
      * Sets button state (Checked or not checked).
      * Will just return if state was same.
-     * @param button EduGuiButton
+     * @param button GuiButtonBetter
      * @param state State that needs to be set.
      */
     protected void setButtonState(GuiButtonBetter button, boolean state)

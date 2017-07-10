@@ -85,7 +85,8 @@ public class GuiButtonBetter extends GuiButton
         this.hoverTextColor = hoverTextColor;
     }
     
-    public void drawButton(Minecraft minecraft, int i, int j)
+    @Override
+    public void drawButton(Minecraft minecraft, int i, int j, float partialTicks)
     {
         if(!visible)
         {
