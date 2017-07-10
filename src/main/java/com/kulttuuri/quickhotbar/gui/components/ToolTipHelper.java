@@ -78,8 +78,8 @@ public class ToolTipHelper
 				// Remove colour tags so they don't affect line length
 				parseList[o] = parseList[o].replaceAll("<red>", ""); parseList[o] = parseList[o].replaceAll("<white>", ""); parseList[o] = parseList[o].replaceAll("<green>", "");
 				
-				if (Minecraft.getMinecraft().fontRendererObj.getStringWidth(parseList[o]) > maxLength)
-					maxLength = Minecraft.getMinecraft().fontRendererObj.getStringWidth(parseList[o]);
+				if (Minecraft.getMinecraft().fontRenderer.getStringWidth(parseList[o]) > maxLength)
+					maxLength = Minecraft.getMinecraft().fontRenderer.getStringWidth(parseList[o]);
 			}
 			// Draw each line
 			for (int i = 0; i < list.length; i++)
@@ -143,7 +143,7 @@ public class ToolTipHelper
         text = text.replace("<white>", "\\247f");
         text = text.replace("<green>", "\\2472");
         // Draws the string
-        Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(text, var5, var6, - 1);
+        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(text, var5, var6, - 1);
 	}
 
     /**

@@ -51,7 +51,7 @@ public abstract class GuiSettingsBase extends GuiScreen
 
     public GuiSettingsBase()
     {
-        this.fontRenderer = fontRendererObj;
+        this.fontRenderer = fontRenderer;
         QuickHotbarEventHandler.renderQuickHotbarPreview = false;
     }
 
@@ -136,7 +136,7 @@ public abstract class GuiSettingsBase extends GuiScreen
     public void setWorldAndResolution(Minecraft minecraft, int i, int j)
     {
         mc = minecraft;
-        fontRenderer = minecraft.fontRendererObj;
+        fontRenderer = minecraft.fontRenderer;
         width = i;
         height = j;
         buttonList.clear();
@@ -212,7 +212,7 @@ public abstract class GuiSettingsBase extends GuiScreen
         for (int k = 0; k < buttonList.size(); k++)
         {
             GuiButton guibutton = buttonList.get(k);
-            guibutton.drawButton(mc, i, j);
+            guibutton.drawButton(mc, i, j, f);
         }
 
         // Draw close & tab size buttons
@@ -222,7 +222,7 @@ public abstract class GuiSettingsBase extends GuiScreen
         for (int k = 0; k < tabList.size(); k++)
         {
             GuiButton guibutton = tabList.get(k);
-            guibutton.drawButton(mc, i, j);
+            guibutton.drawButton(mc, i, j, f);
         }
 
         // Fixes icon blinking

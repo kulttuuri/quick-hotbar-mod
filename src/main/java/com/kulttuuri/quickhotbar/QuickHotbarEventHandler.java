@@ -34,6 +34,7 @@ import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -104,7 +105,7 @@ public class QuickHotbarEventHandler
 			msg = msg + keyNameScrolling + " + " + TranslationHelper.translateString("quickhotbarmod.chat.mousewheel") + orText + " "+TranslationHelper.translateString("quickhotbarmod.chat.toscroll")+". ";
             msg = msg + numberSwitchText;
             msg = msg + openMenuText;
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new TextComponentTranslation(msg, new Object[0]));
+			Minecraft.getMinecraft().ingameGUI.addChatMessage(ChatType.CHAT, new TextComponentTranslation(msg, new Object[0]));
 		}
 	}
 	
@@ -144,7 +145,7 @@ public class QuickHotbarEventHandler
             String msg = "";
             if (QuickHotbarMod.clientSettings.CURRENT_SWITCH_MODE_ROW) msg = TranslationHelper.translateString("quickhotbarmod.chat.rowscrolling");
             else msg = TranslationHelper.translateString("quickhotbarmod.chat.columnscrolling");
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new TextComponentTranslation(msg, new Object[0]));
+            Minecraft.getMinecraft().ingameGUI.addChatMessage(ChatType.CHAT, new TextComponentTranslation(msg, new Object[0]));
         }
 
         if (QuickHotbarMod.clientSettings.ENABLE_SETTING_MENU
@@ -233,7 +234,7 @@ public class QuickHotbarEventHandler
 	@SubscribeEvent
 	public void handleGameUpdate(TickEvent.RenderTickEvent event)
 	{
-		if (announceWelcomeMessage && Minecraft.getMinecraft() != null && Minecraft.getMinecraft().thePlayer != null)
+		if (announceWelcomeMessage && Minecraft.getMinecraft() != null && Minecraft.getMinecraft().player != null)
 		{
 			announceWelcomeMessage = false;
 			announceModWelcomeMessage();
@@ -278,7 +279,7 @@ public class QuickHotbarEventHandler
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5F);
         mc.renderEngine.bindTexture(WIDGETS);
 
-        InventoryPlayer inv = mc.thePlayer.inventory;
+        InventoryPlayer inv = mc.player.inventory;
         GL11.glPushMatrix();
         	GL11.glTranslatef(1f, 1f, 100f);
         	gui.drawTexturedModalRect(width / 2 - 92, height - yPosFromBottom, 0, 0, 182, 22);
@@ -311,11 +312,11 @@ public class QuickHotbarEventHandler
     {
     	Minecraft mc = Minecraft.getMinecraft();
     	
-        ItemStack itemstack = mc.thePlayer.inventory.mainInventory.get(par1);
+        ItemStack itemstack = mc.player.inventory.mainInventory.get(par1);
 
         if (itemstack != null)
         {
-            float f1 = (float)itemstack.func_190921_D() - par4;
+            float f1 = (float)itemstack.getAnimationsToGo() - par4;
             
             if (f1 > 0.0F)
             {
@@ -335,7 +336,7 @@ public class QuickHotbarEventHandler
             }
 
             //itemRenderer.renderItemOverlayIntoGUI(mc.fontRendererObj, mc.getTextureManager(), itemstack, par2, par3+1);
-            itemRenderer.renderItemOverlayIntoGUI(mc.fontRendererObj, itemstack, par2, par3+1, null);
+            itemRenderer.renderItemOverlayIntoGUI(mc.fontRenderer, itemstack, par2, par3+1, null);
         }
     }
 	
@@ -433,14 +434,14 @@ public class QuickHotbarEventHandler
     {
         if ((!reverseScrolling && !directionUp) || (reverseScrolling && directionUp))
         {
-            int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
+            int currentSlot = Minecraft.getMinecraft().player.inventory.currentItem;
             //if (!isScrollingWithKeyboard) currentSlot = currentSlot + 1; // I don't know why this was here.
             if (currentSlot >= 9) currentSlot = 0;
             return currentSlot;
         }
         else
         {
-            int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
+            int currentSlot = Minecraft.getMinecraft().player.inventory.currentItem;
             //if (!isScrollingWithKeyboard) currentSlot = currentSlot - 1; // I don't know why this was here.
             if (currentSlot < 0) currentSlot = 8;
             return currentSlot;
@@ -481,9 +482,9 @@ public class QuickHotbarEventHandler
         ClickType clickType = ClickType.SWAP;
         
         // Note: We prevent Minecraft 1.9 bug where slot 26 does not swap items correctly if that slot is empty and going up by doing this trickery.
-        Minecraft.getMinecraft().playerController.windowClick(inventoryId, !directionUp ? slot1 : slot2, rightClick, clickType, Minecraft.getMinecraft().thePlayer);
-        Minecraft.getMinecraft().playerController.windowClick(inventoryId, !directionUp ? slot2 : slot1, rightClick, clickType, Minecraft.getMinecraft().thePlayer);
-        Minecraft.getMinecraft().playerController.windowClick(inventoryId, !directionUp ? slot1 : slot2, rightClick, clickType, Minecraft.getMinecraft().thePlayer);
+        Minecraft.getMinecraft().playerController.windowClick(inventoryId, !directionUp ? slot1 : slot2, rightClick, clickType, Minecraft.getMinecraft().player);
+        Minecraft.getMinecraft().playerController.windowClick(inventoryId, !directionUp ? slot2 : slot1, rightClick, clickType, Minecraft.getMinecraft().player);
+        Minecraft.getMinecraft().playerController.windowClick(inventoryId, !directionUp ? slot1 : slot2, rightClick, clickType, Minecraft.getMinecraft().player);
         
         //Minecraft.getMinecraft().playerController.windowClick(inventoryId, slot1, rightClick, holdingShift, Minecraft.getMinecraft().thePlayer);
         //Minecraft.getMinecraft().playerController.windowClick(inventoryId, slot2, rightClick, holdingShift, Minecraft.getMinecraft().thePlayer);

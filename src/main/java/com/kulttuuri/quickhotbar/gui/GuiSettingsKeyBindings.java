@@ -62,12 +62,12 @@ public class GuiSettingsKeyBindings extends GuiSettingsBase
 
         int fieldWidth = 100;
         int fieldHeight = 15;
-        textfieldBindings.add(TEXTFIELD_MODIFIER, new GuiTextField(0, Minecraft.getMinecraft().fontRendererObj, width / 2 - 159, height / 2 - 34, fieldWidth, fieldHeight));
-        textfieldBindings.add(TEXTFIELD_SWITCH_MODE, new GuiTextField(0, Minecraft.getMinecraft().fontRendererObj, width / 2 - 159, height / 2 + 15, fieldWidth, fieldHeight));
-        textfieldBindings.add(TEXTFIELD_OPEN_MENU, new GuiTextField(0, Minecraft.getMinecraft().fontRendererObj, width / 2 - 159, height / 2 + 45, fieldWidth, fieldHeight));
+        textfieldBindings.add(TEXTFIELD_MODIFIER, new GuiTextField(0, Minecraft.getMinecraft().fontRenderer, width / 2 - 159, height / 2 - 34, fieldWidth, fieldHeight));
+        textfieldBindings.add(TEXTFIELD_SWITCH_MODE, new GuiTextField(0, Minecraft.getMinecraft().fontRenderer, width / 2 - 159, height / 2 + 15, fieldWidth, fieldHeight));
+        textfieldBindings.add(TEXTFIELD_OPEN_MENU, new GuiTextField(0, Minecraft.getMinecraft().fontRenderer, width / 2 - 159, height / 2 + 45, fieldWidth, fieldHeight));
 
-        textfieldBindings.add(TEXTFIELD_SCROLL_UP, new GuiTextField(0, Minecraft.getMinecraft().fontRendererObj, width / 2 - 30, height / 2 + 15, fieldWidth, fieldHeight));
-        textfieldBindings.add(TEXTFIELD_SCROLL_DOWN, new GuiTextField(0, Minecraft.getMinecraft().fontRendererObj, width / 2 - 30, height / 2 + 45, fieldWidth, fieldHeight));
+        textfieldBindings.add(TEXTFIELD_SCROLL_UP, new GuiTextField(0, Minecraft.getMinecraft().fontRenderer, width / 2 - 30, height / 2 + 15, fieldWidth, fieldHeight));
+        textfieldBindings.add(TEXTFIELD_SCROLL_DOWN, new GuiTextField(0, Minecraft.getMinecraft().fontRenderer, width / 2 - 30, height / 2 + 45, fieldWidth, fieldHeight));
 
         updateValues();
     }
@@ -100,7 +100,7 @@ public class GuiSettingsKeyBindings extends GuiSettingsBase
             	Console.out().println("Mouse pressed when binding key: " + i);
                 if (!setKeyBinding(m, Mouse.getButtonName(k)))
                 {
-                    setErrorTooltip(TranslationHelper.translateString("quickhotbarmod.gui.keybindings.reservederror"), textfield.xPosition - (textfield.width / 6), textfield.yPosition);
+                    setErrorTooltip(TranslationHelper.translateString("quickhotbarmod.gui.keybindings.reservederror"), textfield.x - (textfield.width / 6), textfield.y);
                 }
                 textfield.setFocused(false);
                 updateValues();
@@ -135,7 +135,7 @@ public class GuiSettingsKeyBindings extends GuiSettingsBase
             {
                 if (!setKeyBinding(m, Keyboard.getKeyName(i)))
                 {
-                    setErrorTooltip(TranslationHelper.translateString("quickhotbarmod.gui.keybindings.reservederror"), textfield.xPosition - (textfield.width / 6), textfield.yPosition);
+                    setErrorTooltip(TranslationHelper.translateString("quickhotbarmod.gui.keybindings.reservederror"), textfield.x - (textfield.width / 6), textfield.y);
                 }
                 textfield.setFocused(false);
                 updateValues();
@@ -230,7 +230,7 @@ public class GuiSettingsKeyBindings extends GuiSettingsBase
             if (updateCursor) textfield.updateCursorCounter();
             if (textfield.isFocused())
             {
-                ToolTipHelper.setTooltip(TranslationHelper.translateString("quickhotbarmod.gui.keybindings.typekeyhelptext"), textfield.xPosition - (textfield.width / 6) + 1, textfield.yPosition);
+                ToolTipHelper.setTooltip(TranslationHelper.translateString("quickhotbarmod.gui.keybindings.typekeyhelptext"), textfield.x - (textfield.width / 6) + 1, textfield.y);
                 errorSetTime = 0;
             }
         }

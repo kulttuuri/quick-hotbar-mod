@@ -91,37 +91,37 @@ public class GuiButtonBetter extends GuiButton
         {
             return;
         }
-        FontRenderer fontrenderer = minecraft.fontRendererObj;
+        FontRenderer fontrenderer = minecraft.fontRenderer;
         //GL11.glBindTexture(3553 /*GL_TEXTURE_2D*/, minecraft.renderEngine.getTexture(buttonTextureFile));
         minecraft.renderEngine.bindTexture(buttonTextureFile);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, this.drawTransparent ? 0.5f : 1.0f);
-        boolean flag = i >= xPosition && j >= yPosition && i < xPosition + width && j < yPosition + height;
+        boolean flag = i >= x && j >= y && i < x + width && j < y + height;
         int k = getHoverState(flag);
-        drawTexturedModalRect(xPosition, yPosition, 0, texturePosY + k * 20, width / 2, height);
-        drawTexturedModalRect(xPosition + width / 2, yPosition, texturePosX - width / 2, texturePosY + k * 20, width / 2, height);
+        drawTexturedModalRect(x, y, 0, texturePosY + k * 20, width / 2, height);
+        drawTexturedModalRect(x + width / 2, y, texturePosX - width / 2, texturePosY + k * 20, width / 2, height);
         mouseDragged(minecraft, i, j);
         if (!enabled)
         {
             if (alignToLeft)
-                drawString(fontrenderer, displayString, xPosition + leftPadding, yPosition + (height - 8) / 2, 0xffa0a0a0);
+                drawString(fontrenderer, displayString, x + leftPadding, y + (height - 8) / 2, 0xffa0a0a0);
             else
-                drawCenteredString(fontrenderer, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 0xffa0a0a0);
+                drawCenteredString(fontrenderer, displayString, x + width / 2, y + (height - 8) / 2, 0xffa0a0a0);
         }
         else if (flag)
         {
             if (!hoverText.equals("")) ToolTipHelper.setTooltip(hoverText, i, j);
         	//drawCenteredString(fontrenderer, hoverText, hoverX, hoverY, hoverTextColor); // Show hovertext
             if (alignToLeft)
-                drawString(fontrenderer, displayString, xPosition + leftPadding, yPosition + (height - 8) / 2, 0xffffa0);
+                drawString(fontrenderer, displayString, x + leftPadding, y + (height - 8) / 2, 0xffffa0);
             else
-                drawCenteredString(fontrenderer, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 0xffffa0);
+                drawCenteredString(fontrenderer, displayString, x + width / 2, y + (height - 8) / 2, 0xffffa0);
         }
         else
         {
             if (alignToLeft)
-                drawString(fontrenderer, displayString, xPosition + leftPadding, yPosition + (height - 8) / 2, drawTransparent ? 0xffa0a0a0 : 0xe0e0e0);
+                drawString(fontrenderer, displayString, x + leftPadding, y + (height - 8) / 2, drawTransparent ? 0xffa0a0a0 : 0xe0e0e0);
             else
-                drawCenteredString(fontrenderer, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, drawTransparent ? 0xffa0a0a0 : 0xe0e0e0);
+                drawCenteredString(fontrenderer, displayString, x + width / 2, y + (height - 8) / 2, drawTransparent ? 0xffa0a0a0 : 0xe0e0e0);
         }
     }
 
@@ -139,7 +139,7 @@ public class GuiButtonBetter extends GuiButton
         RenderHelper.disableStandardItemLighting();
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
-        int var4 = minecraft.fontRendererObj.getStringWidth(par1Str);
+        int var4 = minecraft.fontRenderer.getStringWidth(par1Str);
         int var5 = par2 + 12;
         int var6 = par3 - 12;
         byte var8 = 8;
@@ -157,7 +157,7 @@ public class GuiButtonBetter extends GuiButton
         this.drawGradientRect(var5 + var4 + 2, var6 - 3 + 1, var5 + var4 + 3, var6 + var8 + 3 - 1, var10, var11);
         this.drawGradientRect(var5 - 3, var6 - 3, var5 + var4 + 3, var6 - 3 + 1, var10, var10);
         this.drawGradientRect(var5 - 3, var6 + var8 + 2, var5 + var4 + 3, var6 + var8 + 3, var11, var11);
-        minecraft.fontRendererObj.drawString(par1Str, var5, var6, -1);
+        minecraft.fontRenderer.drawString(par1Str, var5, var6, -1);
         this.zLevel = 0.0F;
         //itemRenderer.zLevel = 0.0F;
     }

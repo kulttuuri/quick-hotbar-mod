@@ -93,8 +93,8 @@ public class PacketChangeCurrentRow implements IMessage
 			{
 				try
 				{
-					InventoryPlayer playerInventory = ctx.getServerHandler().playerEntity.inventory;
-                    int currentItem = ctx.getServerHandler().playerEntity.inventory.currentItem;
+					InventoryPlayer playerInventory = ctx.getServerHandler().player.inventory;
+                    int currentItem = ctx.getServerHandler().player.inventory.currentItem;
 					
 					ItemStack[][] items = new ItemStack[4][9];
 					items[1] = getItemsInRow(1, playerInventory);
@@ -137,7 +137,8 @@ public class PacketChangeCurrentRow implements IMessage
                         }
 					}
 					
-					playerInventory.inventoryChanged = true;
+					//playerInventory.inventoryChanged = true;
+					playerInventory.markDirty();
 				}
 				catch (Exception e)
 				{
